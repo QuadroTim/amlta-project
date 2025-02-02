@@ -41,11 +41,11 @@ Download the data from Google Drive. Or download manually from the API using the
   $ probas-dl download-lcis
   ```
 
-- Download LCI results only
+  - Or LCI results only
 
-  ```console
-  $ probas-dl download-lcis --uuids-file lci-results-uuids.txt
-  ```
+    ```console
+    $ probas-dl download-lcis --uuids-file lci-results-uuids.txt
+    ```
 
 - Download processes as json
 
