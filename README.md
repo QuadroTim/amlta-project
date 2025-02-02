@@ -25,6 +25,16 @@ Download the data from Google Drive. Or download manually from the API using the
 
 #### Manual
 
+- Download index
+
+  ```console
+  $ probas-dl download-index --format json
+  ```
+  and/or
+  ```console
+  $ probas-dl download-index --format xml
+  ```
+
 - Download ILCD data
 
   ```console
