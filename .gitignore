@@ -9,6 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-
+data.zip
 data/ILCD/
 data/processes.*
