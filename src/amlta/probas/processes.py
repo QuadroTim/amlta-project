@@ -1,7 +1,9 @@
+from collections import UserList
 from os import PathLike
-from typing import ClassVar, Iterator, List, Optional, Self
+from typing import Any, ClassVar, Iterator, List, Optional, Self
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, GetCoreSchemaHandler
+from pydantic_core import CoreSchema, core_schema
 
 from amlta.config import config
 
@@ -15,13 +17,30 @@ class LocalizedText(BaseModel):
     lang: str | None = None
 
 
+class LocalizedTextList(UserList[LocalizedText]):
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:
+        return core_schema.no_info_after_validator_function(
+            cls, handler(List[LocalizedText])
+        )
+
+    def get(self, preferred_lang: str = "en") -> str:
+        for text in self:
+            if text.lang == preferred_lang:
+                return text.value if text.value else ""
+
+        return next((text.value for text in self if text.value), "")
+
+
 class AccessRestriction(BaseModel):
     value: str
     lang: str
 
 
 class ContactData(BaseModel):
-    shortDescription: List[LocalizedText]
+    shortDescription: LocalizedTextList
     type: str
     refObjectId: str
 
@@ -32,7 +51,7 @@ class ContactData(BaseModel):
 
 
 class BaseNameWrapper(BaseModel):
-    baseName: List[LocalizedText]
+    baseName: LocalizedTextList
 
 
 class ClassificationItem(BaseModel):
@@ -56,13 +75,13 @@ class DataSetInformation(BaseModel):
     UUID: str
     name: BaseNameWrapper
     classificationInformation: ClassificationInformation
-    generalComment: List[LocalizedText]
+    generalComment: LocalizedTextList
     referenceToExternalDocumentation: List[ContactData] | None = None
 
 
 class QuantitativeReference(BaseModel):
     referenceToReferenceFlow: List[int]
-    functionalUnitOrOther: List[LocalizedText] | None = None
+    functionalUnitOrOther: LocalizedTextList | None = None
     type: str
 
 
@@ -79,7 +98,7 @@ class Geography(BaseModel):
 
 
 class Technology(BaseModel):
-    technologyDescriptionAndIncludedProcesses: List[LocalizedText] | None = None
+    technologyDescriptionAndIncludedProcesses: LocalizedTextList | None = None
 
 
 class ProcessInformation(BaseModel):
@@ -126,7 +145,7 @@ class ModellingAndValidation(BaseModel):
 
 class CommissionerAndGoal(BaseModel):
     referenceToCommissioner: List[ContactData] | None = None
-    project: List[LocalizedText] | None = None
+    project: LocalizedTextList | None = None
 
 
 class DataGenerator(BaseModel):
@@ -134,7 +153,7 @@ class DataGenerator(BaseModel):
 
 
 class DataSetFormat(BaseModel):
-    shortDescription: List[LocalizedText]
+    shortDescription: LocalizedTextList
     type: str
     refObjectId: str
 
@@ -167,13 +186,13 @@ class AdministrativeInformation(BaseModel):
 
 
 class ReferenceToFlowDataSet(BaseModel):
-    shortDescription: List[LocalizedText]
+    shortDescription: LocalizedTextList
     type: str
     refObjectId: str
 
 
 class FlowProperty(BaseModel):
-    name: List[LocalizedText]
+    name: LocalizedTextList
     uuid: str
     referenceFlowProperty: bool
     meanValue: float
@@ -216,7 +235,7 @@ class Exchanges(BaseModel):
 
 
 class ReferenceToLCIAMethodDataSet(BaseModel):
-    shortDescription: List[LocalizedText]
+    shortDescription: LocalizedTextList
     type: str
     refObjectId: str
 
