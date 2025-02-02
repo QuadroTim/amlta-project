@@ -268,6 +268,7 @@ def download_lcis(
     out_folder = config.ilcd_data_folder
     total = len(uuids)
 
+    already_downloaded = set()
     if not force:
         downloaded_uuids = {
             f.name.split("_")[0] for f in processes_folder.glob("*_*.xml")
