@@ -1,0 +1,9 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true
+    },
+    "explorer.autoRevealExclude": {
+        "**/.venv": true
+    },
+    "explorer.sortOrder": "type"
+}

@@ -1,0 +1,1277 @@
+{
+  "uba": {
+    "name": "UBA",
+    "categories": [
+      {
+        "value": "Energie",
+        "level": 0,
+        "classId": "4294967296",
+        "sub": [
+          {
+            "value": "Endenergie (W\u00e4rme, Strom, mechan. Energie)",
+            "level": 1,
+            "classId": "4563402752",
+            "sub": [
+              {
+                "value": "Strom",
+                "level": 2,
+                "classId": "4580179968",
+                "sub": [
+                  {
+                    "value": "Strom-Mix",
+                    "level": 3,
+                    "classId": "4584374272",
+                    "sub": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "Energietr\u00e4ger",
+            "level": 1,
+            "classId": "4831838208",
+            "sub": [
+              {
+                "value": "Erneuerbare Energietr\u00e4ger",
+                "level": 2,
+                "classId": "4848615424",
+                "sub": [
+                  {
+                    "value": "\u00d6le",
+                    "level": 3,
+                    "classId": "4850712576",
+                    "sub": [
+                      {
+                        "value": "Verarbeitung",
+                        "level": 4,
+                        "classId": "4850974720",
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Sonstige erneuerbare Energietr\u00e4ger",
+                    "level": 3,
+                    "classId": "4864344064",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4864671744",
+                        "sub": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "Nicht erneuerbare Energietr\u00e4ger",
+                "level": 2,
+                "classId": "4865392640",
+                "sub": [
+                  {
+                    "value": "Braunkohle",
+                    "level": 3,
+                    "classId": "4867489792",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4867751936",
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Erdgas",
+                    "level": 3,
+                    "classId": "4869586944",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4869849088",
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Erd\u00f6l",
+                    "level": 3,
+                    "classId": "4868538368",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4868866048",
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Sonstige nicht erneuerbare Energietr\u00e4ger",
+                    "level": 3,
+                    "classId": "4881121280",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4881383424",
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Steinkohle",
+                    "level": 3,
+                    "classId": "4866441216",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4866703360",
+                        "sub": []
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Uran",
+                    "level": 3,
+                    "classId": "4870635520",
+                    "sub": [
+                      {
+                        "value": "Bereitstellung",
+                        "level": 4,
+                        "classId": "4870897664",
+                        "sub": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Materialien und Produkte",
+        "level": 0,
+        "classId": "8589934592",
+        "sub": [
+          {
+            "value": "Chem. Grundstoffe",
+            "level": 1,
+            "classId": "8858370048",
+            "sub": [
+              {
+                "value": "Chem. Grundstoffe sonstig, anorganisch",
+                "level": 2,
+                "classId": "8959033344",
+                "sub": []
+              },
+              {
+                "value": "Chem. Grundstoffe sonstig, organisch",
+                "level": 2,
+                "classId": "8942256128",
+                "sub": []
+              },
+              {
+                "value": "Kunststoffvorprodukte",
+                "level": 2,
+                "classId": "8891924480",
+                "sub": []
+              },
+              {
+                "value": "Technische Gase",
+                "level": 2,
+                "classId": "8925478912",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Holz, Papier/Pappe",
+            "level": 1,
+            "classId": "9126805504",
+            "sub": []
+          },
+          {
+            "value": "Metalle",
+            "level": 1,
+            "classId": "9663676416",
+            "sub": [
+              {
+                "value": "Edelmetalle",
+                "level": 2,
+                "classId": "9697230848",
+                "sub": []
+              },
+              {
+                "value": "Eisen und Stahl",
+                "level": 2,
+                "classId": "9680453632",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Mineralische Materialien",
+            "level": 1,
+            "classId": "9932111872",
+            "sub": [
+              {
+                "value": "Glas",
+                "level": 2,
+                "classId": "9948889088",
+                "sub": []
+              },
+              {
+                "value": "Natursteine und Erden (ohne Erze)",
+                "level": 2,
+                "classId": "10032775168",
+                "sub": []
+              },
+              {
+                "value": "Sonstige mineralische Materialien",
+                "level": 2,
+                "classId": "10183770112",
+                "sub": []
+              },
+              {
+                "value": "Zement, Kalk, Gips",
+                "level": 2,
+                "classId": "9999220736",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "pflanzliche und tierische Erzeugnisse (ohne Nutzung als Energietr\u00e4ger)",
+            "level": 1,
+            "classId": "10200547328",
+            "sub": [
+              {
+                "value": "Nahrungsmittel",
+                "level": 2,
+                "classId": "10217324544",
+                "sub": [
+                  {
+                    "value": "Menschliche Nahrungsmittel",
+                    "level": 3,
+                    "classId": "10218373120",
+                    "sub": [
+                      {
+                        "value": "Roherzeugnisse",
+                        "level": 4,
+                        "classId": "10218438656",
+                        "sub": [
+                          {
+                            "value": "Gem\u00fcse",
+                            "level": 5,
+                            "classId": "10218455040",
+                            "sub": []
+                          },
+                          {
+                            "value": "Getreide",
+                            "level": 5,
+                            "classId": "10218459136",
+                            "sub": []
+                          },
+                          {
+                            "value": "Obst",
+                            "level": 5,
+                            "classId": "10218467328",
+                            "sub": []
+                          },
+                          {
+                            "value": "Sonstige Roherzeugnisse",
+                            "level": 5,
+                            "classId": "10218500096",
+                            "sub": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "value": "Tierfutter",
+                    "level": 3,
+                    "classId": "10219421696",
+                    "sub": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "Sonstige Produkte",
+            "level": 1,
+            "classId": "10737418240",
+            "sub": [
+              {
+                "value": "Elektronikprodukte",
+                "level": 2,
+                "classId": "10770972672",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Textilien, Bekleidung, Leder",
+            "level": 1,
+            "classId": "10468982784",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Transport",
+        "level": 0,
+        "classId": "12884901888",
+        "sub": [
+          {
+            "value": "Personentransport",
+            "level": 1,
+            "classId": "13153337344",
+            "sub": []
+          }
+        ]
+      }
+    ]
+  },
+  "nace": {
+    "name": "NACE 1.1",
+    "categories": [
+      {
+        "value": "Abwasser- und Abfallbeseitigung und sonstige Entsorgung",
+        "level": 0,
+        "classId": "90",
+        "sub": [
+          {
+            "value": "Abfallbeseitigung",
+            "level": 1,
+            "classId": "90.02",
+            "sub": []
+          },
+          {
+            "value": "Abwasserbeseitigung",
+            "level": 1,
+            "classId": "90.01",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Bau",
+        "level": 0,
+        "classId": "45",
+        "sub": [
+          {
+            "value": "Hoch- und Tiefbau",
+            "level": 1,
+            "classId": "45.2",
+            "sub": [
+              {
+                "value": "Bau von Stra\u00dfen, Bahnverkehrsstrecken, Rollbahnen und Sportanlagen",
+                "level": 2,
+                "classId": "45.23",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Vorbereitende Baustellenarbeiten",
+            "level": 1,
+            "classId": "45.1",
+            "sub": [
+              {
+                "value": "Abbruch-, Spreng- und Erdbewegungsarbeiten",
+                "level": 2,
+                "classId": "45.11",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Bergbau auf Uran- und Thoriumerze",
+        "level": 0,
+        "classId": "12",
+        "sub": []
+      },
+      {
+        "value": "Einzelhandel (ohne Handel mit Kraftfahrzeugen und ohne Tankstellen); Reparatur von Gebrauchsg\u00fctern",
+        "level": 0,
+        "classId": "52",
+        "sub": []
+      },
+      {
+        "value": "Energieversorgung",
+        "level": 0,
+        "classId": "40",
+        "sub": [
+          {
+            "value": "Elektrizit\u00e4tsversorgung",
+            "level": 1,
+            "classId": "40.1",
+            "sub": [
+              {
+                "value": "Elektrizit\u00e4tserzeugung",
+                "level": 2,
+                "classId": "40.11",
+                "sub": []
+              },
+              {
+                "value": "Elektrizit\u00e4ts\u00fcbertragung",
+                "level": 2,
+                "classId": "40.12",
+                "sub": []
+              },
+              {
+                "value": "Elektrizit\u00e4tsverteilung und -handel",
+                "level": 2,
+                "classId": "40.13",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Fernw\u00e4rmeversorgung",
+            "level": 1,
+            "classId": "40.3",
+            "sub": []
+          },
+          {
+            "value": "Gasversorgung",
+            "level": 1,
+            "classId": "40.2",
+            "sub": [
+              {
+                "value": "Gaserzeugung",
+                "level": 2,
+                "classId": "40.21",
+                "sub": []
+              },
+              {
+                "value": "Gasverteilung und -handel durch Rohrleitungen",
+                "level": 2,
+                "classId": "40.22",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Erzbergbau",
+        "level": 0,
+        "classId": "13",
+        "sub": [
+          {
+            "value": "Eisenerzbergbau",
+            "level": 1,
+            "classId": "13.1",
+            "sub": []
+          },
+          {
+            "value": "NE-Metallerzbergbau (ohne Bergbau auf Uran- und Thoriumerze)",
+            "level": 1,
+            "classId": "13.2",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Fischerei und Fischzucht",
+        "level": 0,
+        "classId": "5",
+        "sub": [
+          {
+            "value": "Fischerei",
+            "level": 1,
+            "classId": "5.01",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Forstwirtschaft",
+        "level": 0,
+        "classId": "2",
+        "sub": []
+      },
+      {
+        "value": "Gewinnung von Erd\u00f6l und Erdgas, Erbringung damit verbundener Dienstleistungen",
+        "level": 0,
+        "classId": "11",
+        "sub": [
+          {
+            "value": "Gewinnung von Erd\u00f6l und Erdgas",
+            "level": 1,
+            "classId": "11.1",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Gewinnung von Steinen ind Erden, sonstiger Bergbau",
+        "level": 0,
+        "classId": "14",
+        "sub": [
+          {
+            "value": "Gewinnung von Kies, Sand, Ton und Kaolin",
+            "level": 1,
+            "classId": "14.2",
+            "sub": [
+              {
+                "value": "Gewinnung von Kies und Sand",
+                "level": 2,
+                "classId": "14.21",
+                "sub": []
+              },
+              {
+                "value": "Gewinnung von Ton und Kaolin",
+                "level": 2,
+                "classId": "14.22",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Gewinnung von Mineralien f\u00fcr die Herstellung von chemischen Erzeugnissen",
+            "level": 1,
+            "classId": "14.3",
+            "sub": []
+          },
+          {
+            "value": "Gewinnung von Natursteinen",
+            "level": 1,
+            "classId": "14.1",
+            "sub": [
+              {
+                "value": "Gewinnung von Kalk-, Dolomit-, Gips- + Anhydritstein, Kreide",
+                "level": 2,
+                "classId": "14.12",
+                "sub": []
+              },
+              {
+                "value": "Gewinnung von Naturwerksteinen + Natursteinen a.n.g.",
+                "level": 2,
+                "classId": "14.11",
+                "sub": []
+              },
+              {
+                "value": "Gewinnung von Schiefer",
+                "level": 2,
+                "classId": "14.13",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Gewinnung von Salz",
+            "level": 1,
+            "classId": "14.4",
+            "sub": []
+          },
+          {
+            "value": "Gewinnung von Steinen und Erden a. n. g., sonstiger Bergbau",
+            "level": 1,
+            "classId": "14.5",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Bekleidung",
+        "level": 0,
+        "classId": "18",
+        "sub": []
+      },
+      {
+        "value": "Herstellung von chemischen Erzeugnissen",
+        "level": 0,
+        "classId": "24",
+        "sub": [
+          {
+            "value": "Herstellung von chemischen Grundstoffen",
+            "level": 1,
+            "classId": "24.1",
+            "sub": [
+              {
+                "value": "Herstellung von D\u00fcngemitteln und Stickstoffverbindungen",
+                "level": 2,
+                "classId": "24.15",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Farbstoffen und Pigmenten",
+                "level": 2,
+                "classId": "24.12",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Industriegasen",
+                "level": 2,
+                "classId": "24.11",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Kunststoffen in Prim\u00e4rformen",
+                "level": 2,
+                "classId": "24.16",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von sonstigen anorganischen Grundstoffen und Chemikalien",
+                "level": 2,
+                "classId": "24.13",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von sonstigen organischen Grundstoffen und Chemikalien",
+                "level": 2,
+                "classId": "24.14",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von Seifen, Wasch-, Reinigungs- und K\u00f6rperpflegemitteln sowie von Duftstoffen",
+            "level": 1,
+            "classId": "24.5",
+            "sub": []
+          },
+          {
+            "value": "Herstellung von sonstigen chemischen Erzeugnissen",
+            "level": 1,
+            "classId": "24.6",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Ger\u00e4ten der Elektrizit\u00e4tserzeugung, -verteilung u. \u00e4.",
+        "level": 0,
+        "classId": "31",
+        "sub": [
+          {
+            "value": "Herstellung von elektrischen Ausr\u00fcstungen a.n.g.",
+            "level": 1,
+            "classId": "31.6",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Glas und Glaswaren, Keramik, Verarbeitung von Steinen und Erden",
+        "level": 0,
+        "classId": "26",
+        "sub": [
+          {
+            "value": "Herstellung von Erzeugnissen aus Beton, Zement und Gips",
+            "level": 1,
+            "classId": "26.6",
+            "sub": [
+              {
+                "value": "Herstellung von Erzeugnissen aus Beton, Zement und aus Kalksandstein f\u00fcr den Bau",
+                "level": 2,
+                "classId": "26.61",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Frischbeton (Transportbeton)",
+                "level": 2,
+                "classId": "26.63",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von Glas und Glaswaren",
+            "level": 1,
+            "classId": "26.1",
+            "sub": [
+              {
+                "value": "Herstellung von Flachglas",
+                "level": 2,
+                "classId": "26.11",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Glasfasern und Waren daraus",
+                "level": 2,
+                "classId": "26.14",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von keramischen Erzeugnissen f\u00fcr sonstige technische Zwecke",
+                "level": 2,
+                "classId": "26.24",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von keramischen Erzeugnissen (ohne Herstellung von Ziegeln und Baukeramik)",
+            "level": 1,
+            "classId": "26.2",
+            "sub": []
+          },
+          {
+            "value": "Herstellung von sonstigen Erzeugnissen aus nichtmetallischen Mineralien",
+            "level": 1,
+            "classId": "26.8",
+            "sub": []
+          },
+          {
+            "value": "Herstellung von Zement, Kalk und gebranntem Gips",
+            "level": 1,
+            "classId": "26.5",
+            "sub": [
+              {
+                "value": "Herstellung von gebranntem Gips",
+                "level": 2,
+                "classId": "26.53",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Kalk",
+                "level": 2,
+                "classId": "26.52",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Zement",
+                "level": 2,
+                "classId": "26.51",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von Ziegeln und sonstiger Baukeramik",
+            "level": 1,
+            "classId": "26.4",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Holz sowie Holz-, Kork- und Flechtwaren (ohne Herstellung von M\u00f6beln)",
+        "level": 0,
+        "classId": "20",
+        "sub": [
+          {
+            "value": "Herstellung von Furnier-, Sperrholz-, Holzfaser- und Holzspanplatten",
+            "level": 1,
+            "classId": "20.2",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Kraftwagen und Kraftwagenteilen",
+        "level": 0,
+        "classId": "34",
+        "sub": [
+          {
+            "value": "Herstellung von Kraftwagen und Kraftwagenmotoren",
+            "level": 1,
+            "classId": "34.1",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Metallerzeugnissen",
+        "level": 0,
+        "classId": "28",
+        "sub": [
+          {
+            "value": "Herstellung von sonstigen Metallwaren",
+            "level": 1,
+            "classId": "28.7",
+            "sub": [
+              {
+                "value": "Herstellung von Verpackungen und Verschl\u00fcssen aus Eisen, Stahl und NE-Metall",
+                "level": 2,
+                "classId": "28.72",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Nahrungs- und Futtermitteln sowie Getr\u00e4nken",
+        "level": 0,
+        "classId": "15",
+        "sub": [
+          {
+            "value": "Fischverarbeitung",
+            "level": 1,
+            "classId": "15.2",
+            "sub": []
+          },
+          {
+            "value": "Herstellung von Futtermitteln",
+            "level": 1,
+            "classId": "15.7",
+            "sub": []
+          },
+          {
+            "value": "Herstellung von Getr\u00e4nken",
+            "level": 1,
+            "classId": "15.9",
+            "sub": [
+              {
+                "value": "Herstellung von Alkohol",
+                "level": 2,
+                "classId": "15.92",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von pflanzlichen und tierischen \u00d6len und Fetten",
+            "level": 1,
+            "classId": "15.4",
+            "sub": [
+              {
+                "value": "Herstellung von raffinierten \u00d6len und Fetten",
+                "level": 2,
+                "classId": "15.42",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von rohen \u00d6len und Fetten",
+                "level": 2,
+                "classId": "15.41",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von sonstigen Nahrungs- und Genussmitteln (ohne Herstellung von Getr\u00e4nken)",
+            "level": 1,
+            "classId": "15.8",
+            "sub": [
+              {
+                "value": "Herstellung von Backwaren (ohne Dauerbackwaren)",
+                "level": 2,
+                "classId": "15.81",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Zucker",
+                "level": 2,
+                "classId": "15.83",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Mahl- und Sch\u00e4lm\u00fchlen, Herstellung von St\u00e4rke und St\u00e4rkeerzeugnissen",
+            "level": 1,
+            "classId": "15.6",
+            "sub": [
+              {
+                "value": "Herstellung von St\u00e4rke und St\u00e4rkeerzeugnissen",
+                "level": 2,
+                "classId": "15.62",
+                "sub": []
+              },
+              {
+                "value": "Mahl- + Sch\u00e4lm\u00fchlen",
+                "level": 2,
+                "classId": "15.61",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Milchverarbeitung; Herstellung von Speiseeis",
+            "level": 1,
+            "classId": "15.5",
+            "sub": []
+          },
+          {
+            "value": "Obst- und Gem\u00fcseverarbeitung",
+            "level": 1,
+            "classId": "15.3",
+            "sub": [
+              {
+                "value": "Kartoffelverarbeitung",
+                "level": 2,
+                "classId": "15.31",
+                "sub": []
+              },
+              {
+                "value": "Obst- und Gem\u00fcseverarbeitung a.n.g.",
+                "level": 2,
+                "classId": "15.33",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Schlachten und Fleischverarbeitung",
+            "level": 1,
+            "classId": "15.1",
+            "sub": [
+              {
+                "value": "Fleischverarbeitung",
+                "level": 2,
+                "classId": "15.13",
+                "sub": []
+              },
+              {
+                "value": "Schlachten (ohne Schlachten von Gefl\u00fcgel)",
+                "level": 2,
+                "classId": "15.11",
+                "sub": []
+              },
+              {
+                "value": "Schlachten von Gefl\u00fcgel",
+                "level": 2,
+                "classId": "15.12",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Herstellung von Papier, Pappe und Waren daraus",
+        "level": 0,
+        "classId": "21",
+        "sub": [
+          {
+            "value": "Herstellung von Holz- und Zellstoff, Papier, Karton und Pappe",
+            "level": 1,
+            "classId": "21.1",
+            "sub": [
+              {
+                "value": "Herstellung von Holz- und Zellstoff",
+                "level": 2,
+                "classId": "21.11",
+                "sub": []
+              },
+              {
+                "value": "Herstellung von Papier, Karton und Pappe",
+                "level": 2,
+                "classId": "21.12",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Hilfs- + Nebent\u00e4tigkeiten f\u00fcr den Verkehr; Verkehrsvermittlung",
+        "level": 0,
+        "classId": "63",
+        "sub": []
+      },
+      {
+        "value": "Kohlenbergbau, Torfgewinnung",
+        "level": 0,
+        "classId": "10",
+        "sub": [
+          {
+            "value": "Braunkohlenbergbau und -brikettherstellung",
+            "level": 1,
+            "classId": "10.2",
+            "sub": []
+          },
+          {
+            "value": "Steinkohlenbergbau und -brikettherstellung",
+            "level": 1,
+            "classId": "10.1",
+            "sub": []
+          },
+          {
+            "value": "Torfgewinnung und -veredlung",
+            "level": 1,
+            "classId": "10.3",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Kokerei, Mineral\u00f6lverarbeitung, Herstellung und Verarbeitung von Spalt- und Brutstoffen",
+        "level": 0,
+        "classId": "23",
+        "sub": [
+          {
+            "value": "Herstellung und Verarbeitung von Spalt- und Brutstoffen",
+            "level": 1,
+            "classId": "23.3",
+            "sub": []
+          },
+          {
+            "value": "Kokerei",
+            "level": 1,
+            "classId": "23.1",
+            "sub": []
+          },
+          {
+            "value": "Mineral\u00f6lverarbeitung",
+            "level": 1,
+            "classId": "23.2",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Kraftfahrzeughandel; Instandhaltung und Reparatur von Kraftfahrzeugen; Tankstellen",
+        "level": 0,
+        "classId": "50",
+        "sub": []
+      },
+      {
+        "value": "Landverkehr; Transport in Rohrfernleitungen",
+        "level": 0,
+        "classId": "60",
+        "sub": []
+      },
+      {
+        "value": "Landwirtschaft und Jagd",
+        "level": 0,
+        "classId": "1",
+        "sub": [
+          {
+            "value": "Erbringung von landwirtschaftlichen und g\u00e4rtnerischen Dienstleistungen",
+            "level": 1,
+            "classId": "1.4",
+            "sub": []
+          },
+          {
+            "value": "Pflanzenbau",
+            "level": 1,
+            "classId": "1.1",
+            "sub": [
+              {
+                "value": "Ackerbau",
+                "level": 2,
+                "classId": "1.11",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Tierhaltung",
+            "level": 1,
+            "classId": "1.2",
+            "sub": [
+              {
+                "value": "Haltung von Gefl\u00fcgel",
+                "level": 2,
+                "classId": "1.24",
+                "sub": []
+              },
+              {
+                "value": "Haltung von Rindern",
+                "level": 2,
+                "classId": "1.21",
+                "sub": []
+              },
+              {
+                "value": "Haltung von Schweinen",
+                "level": 2,
+                "classId": "1.23",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Luftfahrt",
+        "level": 0,
+        "classId": "62",
+        "sub": []
+      },
+      {
+        "value": "Metallerzeugung und -bearbeitung",
+        "level": 0,
+        "classId": "27",
+        "sub": [
+          {
+            "value": "Erzeugung und erste Bearbeitung von NE-Metallen",
+            "level": 1,
+            "classId": "27.4",
+            "sub": [
+              {
+                "value": "Erzeugung und erste Bearb. von Kupfer",
+                "level": 2,
+                "classId": "27.44",
+                "sub": []
+              },
+              {
+                "value": "Erzeugung und erste Bearb. von sonst. NE-Metallen",
+                "level": 2,
+                "classId": "27.45",
+                "sub": []
+              },
+              {
+                "value": "Erzeugung und erste Bearbeitung von Aluminium",
+                "level": 2,
+                "classId": "27.42",
+                "sub": []
+              },
+              {
+                "value": "Erzeugung und erste Bearbeitung von Blei, Zink und Zinn",
+                "level": 2,
+                "classId": "27.43",
+                "sub": []
+              },
+              {
+                "value": "Erzeugung und erste Bearbeitung von Edelmetallen",
+                "level": 2,
+                "classId": "27.41",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Erzeugung von Roheisen, Stahl und Ferrolegierungen",
+            "level": 1,
+            "classId": "27.1",
+            "sub": []
+          },
+          {
+            "value": "Gie\u00dfereien",
+            "level": 1,
+            "classId": "27.5",
+            "sub": [
+              {
+                "value": "Eisengie\u00dfereien",
+                "level": 2,
+                "classId": "27.51",
+                "sub": []
+              },
+              {
+                "value": "Stahlgie\u00dfereien",
+                "level": 2,
+                "classId": "27.52",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Herstellung von Rohren",
+            "level": 1,
+            "classId": "27.2",
+            "sub": []
+          },
+          {
+            "value": "Sonstige erste Bearbeitung von Eisen und Stahl",
+            "level": 1,
+            "classId": "27.3",
+            "sub": [
+              {
+                "value": "Herstellung von Kaltband mit einer Breite von weniger als 600 mm",
+                "level": 2,
+                "classId": "27.32",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "nicht zugeordnet",
+        "level": 0,
+        "classId": "0",
+        "sub": []
+      },
+      {
+        "value": "R\u00fcckgewinnung",
+        "level": 0,
+        "classId": "37",
+        "sub": [
+          {
+            "value": "R\u00fcckgewinnung von metallischen Altmaterialien und Reststoffen",
+            "level": 1,
+            "classId": "37.1",
+            "sub": []
+          },
+          {
+            "value": "R\u00fcckgewinnung von nichtmetallischen Altmaterialien und Reststoffen",
+            "level": 1,
+            "classId": "37.2",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Schifffahrt",
+        "level": 0,
+        "classId": "61",
+        "sub": [
+          {
+            "value": "Binnenschifffahrt",
+            "level": 1,
+            "classId": "61.2",
+            "sub": []
+          },
+          {
+            "value": "See- und K\u00fcstenschifffahrt",
+            "level": 1,
+            "classId": "61.1",
+            "sub": []
+          }
+        ]
+      },
+      {
+        "value": "Textilgewerbe",
+        "level": 0,
+        "classId": "17",
+        "sub": [
+          {
+            "value": "Spinnstoffaufbereitung und Spinnerei",
+            "level": 1,
+            "classId": "17.1",
+            "sub": [
+              {
+                "value": "Baumwollaufbereitung und -spinnerei",
+                "level": 2,
+                "classId": "17.11",
+                "sub": []
+              }
+            ]
+          },
+          {
+            "value": "Weberei",
+            "level": 1,
+            "classId": "17.2",
+            "sub": [
+              {
+                "value": "Baumwollweberei",
+                "level": 2,
+                "classId": "17.21",
+                "sub": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "value": "Verbrauch-Haushalte",
+        "level": 0,
+        "classId": "100",
+        "sub": []
+      },
+      {
+        "value": "Wasserversorgung",
+        "level": 0,
+        "classId": "41",
+        "sub": []
+      }
+    ]
+  }
+}

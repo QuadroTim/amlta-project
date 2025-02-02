@@ -1,0 +1,1324 @@
+{
+  "datastockUuid": "74as-89fs-634w-f523",
+  "language": "en",
+  "introductionText": "<p>If you want to know the greenhouse gas emissions associated with the production of a material such as aluminium, a foodstuff such as milk or driving a car, you will find the information on the following tiles.</p><p>And if you are interested in other environmental indicators like energy demand or the emissions of air and water pollutants, just click on the respective tile.</p>",
+  "groups": [
+    {
+      "name": "Energy supply",
+      "color": "#FF9900",
+      "subgroups": [
+        {
+          "name": "Energy supply for electricity",
+          "processes": [
+            {
+              "uuid": "94d59c88-0a80-44a3-9947-48626813a94e",
+              "name": "Electricity from lignite power plant",
+              "icon": "fas fa-plug",
+              "gwpValue": 0.96184,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Generation of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "7bdea37b-ecf0-4b13-a204-9dd0bfca662b",
+              "name": "Average electricity generation Germany",
+              "icon": "fas fa-plug",
+              "gwpValue": 0.39205,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Generation of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "6b171aa2-0dba-4ae9-89db-637f55348391",
+              "name": "Electricity from natural gas cogeneration plant",
+              "icon": "fas fa-plug",
+              "gwpValue": 0.367542,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Generation of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "ae628338-9e60-4cfe-91f6-7f7111da317d",
+              "name": "Average electricity for household applications",
+              "icon": "fas fa-plug",
+              "gwpValue": 0.404694,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "99169f2c-2f21-4e9c-b21c-12b93972a500",
+              "name": "Electricity from on-shore wind power",
+              "icon": "fas fa-plug",
+              "gwpValue": 0.008676,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Generation of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "8fbac159-cb48-408b-96ad-a6b4cac083e9",
+              "name": "Electricity from off-shore wind power",
+              "icon": "fas fa-plug",
+              "gwpValue": 0.004471,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Generation of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "5770553e-569a-4ee1-81c1-9917b858dbee",
+              "name": "Electricity from photovoltaics",
+              "icon": "fas fa-solar-panel",
+              "gwpValue": 0.026924,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Generation of 1 kWh electricity",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            }
+          ]
+        },
+        {
+          "name": "Energy supply for space heating and warm water",
+          "processes": [
+            {
+              "uuid": "6dc315d7-c017-46ed-99f8-05ff57de1702",
+              "name": "Average district heating Germany",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.153918,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "c6fb47f4-dafa-4aea-b009-1dbf9ca1d8ca",
+              "name": "Heating by natural gas condensing boiler",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.232315,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "c2cf2493-dfa1-4014-a4d9-f9512e0313fe",
+              "name": "District heating by natural gas cogeneration plant",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.086058,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "20b1d67a-10cf-4535-a501-a1950261c72d",
+              "name": "Oil-fired heating",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.364557,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "0593c706-4ee5-44ae-85ef-bd60eac7c9c8",
+              "name": "Heating by oil condensing boiler",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.317505,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "c78bcb09-4f4a-46dd-aba9-a9a87ba9a09e",
+              "name": "Average space heating Germany",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.23576,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "5d30791e-6cb3-433c-95bd-0b4782bd9c0d",
+              "name": "Heating by wood pellet boiler",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.019678,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh heat",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "67ef4b89-c5b5-41db-8a43-5a69dc8d041d",
+              "name": "Warm water generation by solar heater",
+              "icon": "fas fa-solar-panel",
+              "gwpValue": 0.020056,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh warm water",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "f66b4001-9814-4dc9-a8a1-ed1bd7fd7e84",
+              "name": "Average warm water generation Germany",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.397346,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh warm water",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Energy supply for cooking",
+          "processes": [
+            {
+              "uuid": "c1742ccd-cf3b-4b4c-b23d-42fad9d63f2c",
+              "name": "Cooking with electric stove",
+              "icon": "fas fa-fire-alt",
+              "gwpValue": 0.601344,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh cooking energy",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2010
+            },
+            {
+              "uuid": "5cc8181a-d58d-4c2c-b796-b865e8382148",
+              "name": "Cooking with natural gas stove",
+              "icon": "fas fa-fire-alt",
+              "gwpValue": 0.418716,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh cooking energy",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2000
+            },
+            {
+              "uuid": "3ab14782-a35d-4039-84a1-0679f2d2f30e",
+              "name": "Cooking with propane gas cyclinder",
+              "icon": "fas fa-fire-alt",
+              "gwpValue": 0.439887,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh cooking energy",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transport processes",
+      "color": "#9FC5F8",
+      "subgroups": [
+        {
+          "name": "Passenger transport",
+          "processes": [
+            {
+              "uuid": "2efb1738-f007-4194-86fe-bd863dbb7a3f",
+              "name": "Public bus service",
+              "icon": "fas fa-bus",
+              "gwpValue": 0.0555,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "4ff70a08-e99a-4207-bbaa-e704b1c40c1f",
+              "name": "Long-distance coach",
+              "icon": "fas fa-bus",
+              "gwpValue": 0.0433,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "abeb9792-780a-4500-b8f6-6e36ae550837",
+              "name": "Aircraft - domestic flight",
+              "icon": "fas fa-plane",
+              "gwpValue": 0.166,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "066e793e-4ea2-42fb-a7f8-d50845658e32",
+              "name": "Aircraft - international flight",
+              "icon": "fas fa-plane",
+              "gwpValue": 0.117,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "a0ceebb1-4e37-4773-873e-2b5883a2c450",
+              "name": "Diesel passenger car - upper class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.22,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "c36dbcb8-c1b4-4154-a254-d464a3080fa0",
+              "name": "Diesel passenger car - compact class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.143,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "983d3894-0af8-4cce-b46c-fe9c78bd3bee",
+              "name": "Diesel passenger car - middle class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.204,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2010
+            },
+            {
+              "uuid": "97b3a384-7a69-49be-8b2d-10b936efeab1",
+              "name": "Electric passenger car - compact class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.0479,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "c70ca7f6-ada4-4350-a149-f05d8605d8a8",
+              "name": "Electric passenger car - middle class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.0613,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "33853ae2-88f5-427c-91c6-5c762df2e2a3",
+              "name": "Petrol passenger car - upper class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.259,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "b35b0ed5-af48-48fe-bfb0-7e300a91c298",
+              "name": "Petrol passenger car - compact class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.176,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "0843e8ed-3665-4662-931b-0fba5bb3df89",
+              "name": "Petrol passenger car - middle class",
+              "icon": "fas fa-car",
+              "gwpValue": 0.207,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "4e8bd807-30c3-4b87-b593-639224cf1d92",
+              "name": "Long-distance train - electic traction",
+              "icon": "fas fa-train",
+              "gwpValue": 0.00954,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "771699f9-00fe-4c58-94ec-a58a49ba4bce",
+              "name": "Local train - Diesel traction",
+              "icon": "fas fa-subway",
+              "gwpValue": 0.071,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "4e217d1f-9aad-4c63-b251-05063bd88a1d",
+              "name": "Local train - Electric traction",
+              "icon": "fas fa-subway",
+              "gwpValue": 0.0548,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "58e976cc-6d3f-42bd-92d7-84d7bd40e395",
+              "name": "Bicycle",
+              "icon": "fas fa-bicycle",
+              "gwpValue": 0.00407,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one person",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Transport of goods",
+          "processes": [
+            {
+              "uuid": "ee1883c3-b3da-4318-b2f1-2f6ea759e2c1",
+              "name": "Air-cargo - international",
+              "icon": "fas fa-plane",
+              "gwpValue": 0.709,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one tonne of goods",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "34e43606-ab76-4f83-b066-b866f93bdddd",
+              "name": "Average lorry Germany",
+              "icon": "fas fa-truck",
+              "gwpValue": 0.0532,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one tonne of goods",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "f6ec3e28-9e02-4ef5-bf1f-7088946db225",
+              "name": "Inland cargo vessel",
+              "icon": "fas fa-ship",
+              "gwpValue": 0.0248,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one tonne of goods",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "5d8cef4c-55f9-4a63-8083-48922f512ba7",
+              "name": "Overseas container vessel",
+              "icon": "fas fa-ship",
+              "gwpValue": 0.0118,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one tonne of goods",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "World",
+              "time": 2020
+            },
+            {
+              "uuid": "bc837acf-f16c-4a8c-9f83-e24e65817ccd",
+              "name": "Freight train - Diesel traction",
+              "icon": "fas fa-train",
+              "gwpValue": 0.0338,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one tonne of goods",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "d14b171f-8f9f-495c-a4a7-d9112e9866e2",
+              "name": "Freight train - Electric traction",
+              "icon": "fas fa-train",
+              "gwpValue": 0.0189,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 km transportation of one tonne of goods",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Production of food",
+      "color": "#93C47D",
+      "subgroups": [
+        {
+          "name": "Production of field crops and vegetables",
+          "processes": [
+            {
+              "uuid": "1b8b8ea7-fd9d-4bcb-9dfe-53a2389a35df",
+              "name": "Vegetables",
+              "icon": "fas fa-carrot",
+              "gwpValue": 0.137,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg vegetables in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "88b55744-44fb-4bf3-b15f-d8c300b9f530",
+              "name": "Potatoes",
+              "icon": "fas fa-carrot",
+              "gwpValue": 0.149,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg potatoes in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "adffcfbf-f9fe-45e6-a993-32f0e3ed2400",
+              "name": "Rice from Asia",
+              "icon": "fas fa-carrot",
+              "gwpValue": 4.85,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg rice in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "9f6a8f79-34d0-47c0-bbdd-a165c5b17cc8",
+              "name": "Tomatos",
+              "icon": "fas fa-carrot",
+              "gwpValue": 0.517,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg tomatoes in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            }
+          ]
+        },
+        {
+          "name": "Production of fruits",
+          "processes": [
+            {
+              "uuid": "452079d6-b4a6-4895-942b-f778cbb89490",
+              "name": "Bananas",
+              "icon": "fas fa-apple-alt",
+              "gwpValue": 0.392,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg bananas in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "9a861444-7cbb-4b71-acce-1012530f2145",
+              "name": "Oranges",
+              "icon": "fas fa-apple-alt",
+              "gwpValue": 0.505,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg oranges in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "86e95f75-c500-421f-bbc8-68cf745029a3",
+              "name": "Apples",
+              "icon": "fas fa-apple-alt",
+              "gwpValue": 0.879,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg apples in shops",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Production of meat",
+          "processes": [
+            {
+              "uuid": "5d371e20-9ada-4881-96b6-03ee886c07c1",
+              "name": "Fried chicken",
+              "icon": "fas fa-drumstick-bite",
+              "gwpValue": 13.1,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg chicken in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "a1432504-0c42-47f8-a2f1-034ef18aa5d2",
+              "name": "Beef",
+              "icon": "fas fa-drumstick-bite",
+              "gwpValue": 26,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg beef in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "bcc19911-1d50-4f7f-9293-b6c7a4de3680",
+              "name": "Pork",
+              "icon": "fas fa-drumstick-bite",
+              "gwpValue": 5.49,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg pork in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "c5530180-0ad8-4254-a9fe-ff9adf8cfb3a",
+              "name": "Sausage",
+              "icon": "fas fa-drumstick-bite",
+              "gwpValue": 5.31,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg sausage in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            }
+          ]
+        },
+        {
+          "name": "Production of fish",
+          "processes": [
+            {
+              "uuid": "9a5d71ee-85da-4d5d-be3a-d12d824fa7c6",
+              "name": "Imported sea fish",
+              "icon": "fas fa-fish",
+              "gwpValue": 2.46,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg sea fish",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "imported to Europe",
+              "time": 2020
+            },
+            {
+              "uuid": "89398124-0d1c-421d-90a8-6edfb08993c0",
+              "name": "Fresh sea fish",
+              "icon": "fas fa-fish",
+              "gwpValue": 1.19,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg sea fish",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            }
+          ]
+        },
+        {
+          "name": "Production of processed food",
+          "processes": [
+            {
+              "uuid": "ba167311-c467-465d-b303-730c0362d731",
+              "name": "Bread",
+              "icon": "fas fa-utensils",
+              "gwpValue": 0.639,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg bread in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "e94c0824-443f-463d-a8a1-2785ea08c6be",
+              "name": "Eggs",
+              "icon": "fas fa-egg",
+              "gwpValue": 1.22,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg eggs in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "4f6b80c7-a0ae-4a6f-a92c-5a65fe67452b",
+              "name": "Frozen sea fish",
+              "icon": "fas fa-fish",
+              "gwpValue": 3.32,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg frozen sea fish in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "694a4c9f-66e9-442f-b63a-1e882c16d56f",
+              "name": "Frozen vegetable",
+              "icon": "fas fa-carrot",
+              "gwpValue": 0.459,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg frozen vegetables in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "09b0c54e-3adb-4496-b98d-077d6ae5c43a",
+              "name": "Frozen french fries",
+              "icon": "fas fa-carrot",
+              "gwpValue": 0.791,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg frozen french fries in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "2af29fd8-8822-428f-92bd-ffc3f71b2d91",
+              "name": "Cheese",
+              "icon": "fas fa-cheese",
+              "gwpValue": 8.18,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg cheese in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "c5933c96-5e9b-465a-b47f-68fe676cab85",
+              "name": "Milk",
+              "icon": "fas fa-utensils",
+              "gwpValue": 2.09,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 l milk in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "6b8be227-acb8-43ee-b88e-c43ef10f9f05",
+              "name": "Sugar",
+              "icon": "fas fa-utensils",
+              "gwpValue": 1.25,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg sugar in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            },
+            {
+              "uuid": "e831f6f8-851b-4542-a2f1-63a687dad8ff",
+              "name": "Cooking oil",
+              "icon": "fas fa-utensils",
+              "gwpValue": 1.38,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kg cooking oil in shops",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "sold in Germany",
+              "time": 2015
+            }
+          ]
+        },
+        {
+          "name": "Tap water",
+          "processes": [
+            {
+              "uuid": "218bbfcd-d3aa-4449-ae1e-25887291a21a",
+              "name": "Tap water",
+              "icon": "fas fa-hand-holding-water",
+              "gwpValue": 0.000242,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 l tap water",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Production of raw materials",
+      "color": "#E06666",
+      "subgroups": [
+        {
+          "name": "Production of fuels",
+          "processes": [
+            {
+              "uuid": "a54e0f79-3349-4869-87c4-d1db282c792d",
+              "name": "Biogas from gas grid",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.126658698673041,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh biogas from the grid",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2010
+            },
+            {
+              "uuid": "0331bd9c-0ed9-4d4c-b082-fa383ceb26d3",
+              "name": "Natural gas from gas grid",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.006155995075204,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh natural gas from the grid",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "88a4dc26-77b6-4893-a8f4-d47c9ac8d35b",
+              "name": "Gasoline at gas station",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.057949153640677,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh gasoline at gas station",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "a8828505-dca2-43c2-88a1-3ddd964c079d",
+              "name": "Diesel at gas station",
+              "icon": "fas fa-burn",
+              "gwpValue": 0.048049161560671,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Supply of 1 kWh Diesel at gas station",
+              "flowValue": null,
+              "flowConversion": 3.5999971200023e-06,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "c6dbc325-4ac0-4f4d-bb53-ec084fca26bd",
+              "name": "Hydrogen",
+              "icon": "fas fa-burn",
+              "gwpValue": 1.702,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg Hydrogen",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Europe",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Production of metals from ore",
+          "processes": [
+            {
+              "uuid": "9cc7bce5-f40f-45a4-b51c-42daf1fd6044",
+              "name": "Aluminium",
+              "icon": "fas fa-industry",
+              "gwpValue": 11.904,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg aluminium",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2001
+            },
+            {
+              "uuid": "c6033ee1-cf1d-42a6-84d5-d1efcc7d03b9",
+              "name": "Pig iron",
+              "icon": "fas fa-industry",
+              "gwpValue": 1.5,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg pig iron",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 1999
+            },
+            {
+              "uuid": "bdb335ef-9588-4b6d-a13f-587250ddee19",
+              "name": "Gold",
+              "icon": "fas fa-industry",
+              "gwpValue": 17903.079,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg gold",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2000
+            },
+            {
+              "uuid": "aae2a423-5ff5-4285-82fa-3cdef4a04581",
+              "name": "Copper",
+              "icon": "fas fa-industry",
+              "gwpValue": 2.874,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg copper",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2000
+            },
+            {
+              "uuid": "b08a521b-e4f2-49bb-ae01-9e526e179da4",
+              "name": "Silver",
+              "icon": "fas fa-industry",
+              "gwpValue": 123.699,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg silver",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2000
+            },
+            {
+              "uuid": "7bff8f38-d49f-41c8-92e2-2ec0c695f058",
+              "name": "Steel",
+              "icon": "fas fa-industry",
+              "gwpValue": 1.712,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg steel",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Production of metals by recycling",
+          "processes": [
+            {
+              "uuid": "4630cba2-ccfc-4c97-bad6-3db05a0f5e2d",
+              "name": "Secondary aluminium",
+              "icon": "fas fa-recycle",
+              "gwpValue": 1.036,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg aluminium",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2004
+            },
+            {
+              "uuid": "e327bcc8-71a4-4f3d-868f-93b760750497",
+              "name": "Secondary steel",
+              "icon": "fas fa-recycle",
+              "gwpValue": 0.399,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg steel",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2004
+            },
+            {
+              "uuid": "26464fe0-b2e8-4fdd-b8c3-63b6ef688bfa",
+              "name": "Secondary copper",
+              "icon": "fas fa-recycle",
+              "gwpValue": 1.699,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg copper",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "sold in Germany",
+              "time": 2004
+            }
+          ]
+        },
+        {
+          "name": "Production of mineral-based products",
+          "processes": [
+            {
+              "uuid": "f5e31dcd-4c13-44f6-812f-8501a9cef2d2",
+              "name": "Container glass",
+              "icon": "fas fa-shapes",
+              "gwpValue": 0.563,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg container glass",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Germany",
+              "time": 2004
+            },
+            {
+              "uuid": "8aef102b-dc67-4225-9a91-5e244cf9a0e9",
+              "name": "Concrete",
+              "icon": "fas fa-shapes",
+              "gwpValue": 0.164,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg concrete",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "f64a3c51-3b17-4db0-b199-0fc4a70a827e",
+              "name": "Gypsum",
+              "icon": "fas fa-shapes",
+              "gwpValue": 0.0411,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg gypsum",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2010
+            },
+            {
+              "uuid": "e1e8bfd1-cf39-4c3c-8b55-e5473de5e338",
+              "name": "Flat glass",
+              "icon": "fas fa-shapes",
+              "gwpValue": 1.09,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg flat glass",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "b9d0ef5d-124e-4ae9-aec4-02a0cf7e6827",
+              "name": "Cement",
+              "icon": "fas fa-shapes",
+              "gwpValue": 0.928,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg cement",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "415e6512-d685-4ad0-9080-1fed547dc186",
+              "name": "Rock salt",
+              "icon": "fas fa-shapes",
+              "gwpValue": 0.128,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg rock salt",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Germany",
+              "time": 2000
+            },
+            {
+              "uuid": "5b04fd0f-1d97-47ba-9fc0-b5ace7e16d82",
+              "name": "Sand",
+              "icon": "fas fa-shapes",
+              "gwpValue": 0.0199,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg sand",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Germany",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Production of biobased products",
+          "processes": [
+            {
+              "uuid": "55fdcbda-d2c4-4814-b215-0319c1bf7008",
+              "name": "Spruce wood",
+              "icon": "fas fa-tree",
+              "gwpValue": 0.0277,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg spruce wood (absolut dry)",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Manufacturing of processed goods",
+      "color": "#BB99FF",
+      "subgroups": [
+        {
+          "name": "Manufacturing of metal products",
+          "processes": [
+            {
+              "uuid": "80a183e1-c97d-4aac-b56a-3467e4ddd3ea",
+              "name": "Steel sheet",
+              "icon": "fas fa-shapes",
+              "gwpValue": 1.65,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg steel sheet",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "ccbf5d46-9634-4a71-b82f-32cfdf89f5b2",
+              "name": "Galvanized steel sheet",
+              "icon": "fas fa-shapes",
+              "gwpValue": 2.13,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg galvanized steel sheet",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            }
+          ]
+        },
+        {
+          "name": "Manufacturing of plastics",
+          "processes": [
+            {
+              "uuid": "843313f5-5a69-4af5-936d-07e566a2b4d7",
+              "name": "Polyehtylene",
+              "icon": "fas fa-cubes",
+              "gwpValue": 2.133,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg polyethylene",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Europe",
+              "time": 2000
+            },
+            {
+              "uuid": "26e4a088-bfc2-476a-85ba-55bbd9a96d64",
+              "name": "PET",
+              "icon": "fas fa-cubes",
+              "gwpValue": 2.73,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg PET",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Europe",
+              "time": 1999
+            },
+            {
+              "uuid": "f2a835e9-3115-4786-92a8-82dc6fd5891f",
+              "name": "PVC",
+              "icon": "fas fa-cubes",
+              "gwpValue": 1.905,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg PVC",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Europe",
+              "time": 2004
+            }
+          ]
+        },
+        {
+          "name": "Manufacturing of biobased products",
+          "processes": [
+            {
+              "uuid": "659a7313-81bf-44ff-b6c9-ff57ae009b04",
+              "name": "Paper",
+              "icon": "fas fa-paper-plane",
+              "gwpValue": 1.34,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg paper",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2010
+            },
+            {
+              "uuid": "0a6197a2-f124-4702-a239-d988c2047f85",
+              "name": "Cotton T-Shirt",
+              "icon": "fas fa-tshirt",
+              "gwpValue": 36.6,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg cotton T-shirt",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2000
+            },
+            {
+              "uuid": "7593562d-e48e-46e6-aeb1-d72399340655",
+              "name": "Newsprint",
+              "icon": "fas fa-paper-plane",
+              "gwpValue": 1.267,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of 1 kg newsprint",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Europe",
+              "time": 2000
+            }
+          ]
+        },
+        {
+          "name": "Manufacturing of consumer products",
+          "processes": [
+            {
+              "uuid": "3af5465a-2f6f-401e-9ac7-5429818249d7",
+              "name": "Manufacturing of PV solar panel",
+              "icon": "fas fa-solar-panel",
+              "gwpValue": 9.63,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "related to 1 tonne product weight",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2020
+            },
+            {
+              "uuid": "442100f1-9c86-4b30-b309-e4bf9cd37f31",
+              "name": "Manufacturing of cars",
+              "icon": "fas fa-car",
+              "gwpValue": 4.329,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "Production of a car - related to 1 kg product weight",
+              "flowValue": null,
+              "flowConversion": 0.001,
+              "location": "Europe",
+              "time": 2000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Disposal",
+      "color": "#FFFF99",
+      "subgroups": [
+        {
+          "name": "",
+          "processes": [
+            {
+              "uuid": "ddd",
+              "name": "Wastewater treatment",
+              "icon": "fas fa-trash-alt",
+              "gwpValue": 0.000276,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 l treated waste water",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2005
+            },
+            {
+              "uuid": "eee",
+              "name": "Municipal waste incineration",
+              "icon": "fas fa-trash-alt",
+              "gwpValue": 0.367,
+              "gwpUnit": "kg CO2-eq.",
+              "flowUnit": "1 kg incinerated municipal waste",
+              "flowValue": null,
+              "flowConversion": 1,
+              "location": "Germany",
+              "time": 2005
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
