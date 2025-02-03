@@ -9,9 +9,9 @@ def extract_process_flows(process: processes.ProcessData) -> pd.DataFrame:
             {
                 "exchange_direction": exchange.exchange_direction,
                 # what are the differences?
-                "exchange_mean_amount": exchange.meanAmount,
+                # "exchange_mean_amount": exchange.meanAmount,
                 "exchange_resulting_amount": exchange.resultingAmount,
-                "exchange_resulting_flow_amount": exchange.resultingflowAmount,
+                # "exchange_resulting_flow_amount": exchange.resultingflowAmount,
                 "exchange_type_of_flow": exchange.typeOfFlow,
                 "exchange_classification_hierarchy": (
                     exchange.classification.classHierarchy

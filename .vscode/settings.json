@@ -6,5 +6,6 @@
         "**/.venv": true
     },
     "explorer.sortOrder": "type",
-    "python.analysis.typeCheckingMode": "standard"
+    "python.analysis.typeCheckingMode": "standard",
+    "jupyter.debugJustMyCode": false
 }
