@@ -1,5 +1,5 @@
 import random
-from typing import Literal, NamedTuple, cast
+from typing import Literal, NamedTuple, TypeAlias, cast
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -52,52 +52,9 @@ Think step by step;
 </instructions>
 """.strip()
 
-
-# TODO: include description (`generalComment`) unless its the default useless one;
-#   "Kurzinfo: Datensatz aus GEMIS. Negative Werte durch Gutschriftenrechnung..."
 user_prompt = """
 <process>
-# Name
-{process_name!r}
-
-# Context
-## Year
-Start year of the time period for which the data set is valid (until year of "Data set valid until:"). For data sets that combine data from different
-years, the most representative year is given regarding the overall environmental impact. In that case, the reference year is derived by expert
-judgement.
-
-=> {process_year}
-
-## Geography
-Location, country or region the data set represents. [Note 1: This field does not refer to e.g. the country in which a specific site is located that is
-represented by this data set but to the actually represented country, region, or site. Note 2: Entry can be of type "two-letter ISO 3166 country code" for countries,
-"seven-letter regional codes" for regions or continents, or "market areas and market organisations", as predefined for the ILCD. Also a name for e.g. a specific plant
-etc. can be given here (e.g. "FR, Lyon, XY Company, Z Site"; user defined). Note 3: The fact whether the entry refers to production or to consumption / supply has to be
-stated in the name-field "Mix and location types" e.g. as "Production mix".]
-
-=> {process_geography}
-
-## Classification
-Hierarchical classification of the good, service, or process. (Note: This entry is NOT required for the identification of a Process. It should
-nevertheless be avoided to use identical names for Processes in the same category.
-
-=> {process_classification}
-
-# Flows
-Input/Output list of exchanges with the quantitative inventory data, as well as pre-calculated LCIA results.
-- Amount: Final value to be used for calculation of the LCI results and in the product system: It is calculated as the product of the "Mean amount" value times the
-    value of the "Variable". In case that no "Variable" entry is given, the "Resulting amount" is identical to the "Mean amount", i.e. a factor "1" is
-    applied.
-
-## Number of Flows
-=> Input: {len_exchanges_input}
-=> Output: {len_exchanges_output}
-
-## Input Flows
-{input_flows}
-
-## Output Flows
-{output_flows}
+{process_description}
 </process>
 
 Given the provided LCI process data, what is a question an analyst could ask about the process flows?
@@ -114,7 +71,9 @@ class Flow(NamedTuple):
     exchange_resulting_amount: float
     exchange_type_of_flow: str
     exchange_classification_hierarchy: str
+    flow_uuid: str
     flow_description: str
+    flow_property_uuid: str
     flow_property_name: str
     flow_property_unit: str
 
@@ -208,12 +167,46 @@ class LCIQuestion(BaseModel):
     )
 
 
-def generate_example(process: ProcessData):
-    flows_df = (
-        extract_process_flows(process)
-        .sort_values(by="exchange_resulting_amount", ascending=False)
-        .sort_values(by="exchange_classification_hierarchy")
-    )
+MarkdownValue: TypeAlias = "str | MarkdownData"
+MarkdownData: TypeAlias = dict[str, "MarkdownValue | list[MarkdownValue]"]
+
+
+def render_markdown(data: MarkdownData, level=0) -> str:
+    _headings = [
+        "#",
+        "##",
+        "###",
+        "####",
+        "#####",
+        "######",
+    ]
+
+    def render_markdown_value(
+        value: "MarkdownValue | list[MarkdownValue]", level=level
+    ) -> str:
+        if isinstance(value, str):
+            return value
+        elif isinstance(value, list):
+            return "\n\n".join(
+                render_markdown_value(item, level=level) for item in value
+            )
+        else:
+            return "\n\n".join(
+                f"{_headings[level]} {key}\n{render_markdown_value(val, level + 1)}"
+                for key, val in value.items()
+            )
+
+    return render_markdown_value(data, level)
+
+
+_default_general_comment = "Kurzinfo: Datensatz aus GEMIS. Negative Werte durch Gutschriftenrechnung. \n \nGEMIS steht f\u00fcr \u201cGlobales Emissions-Modell Integrierter Systeme\u201c; es ist ein Softwaretool des \u00d6ko-Instituts. GEMIS wurde 1987 erstmals angewendet und wird seitdem weiterentwickelt. \n \nDie GEMIS-Datens\u00e4tze beruhen - je nach Anwendung - auf unterschiedlichen Methoden; auch der zeitliche und der \u00f6rtliche Bezug der Datens\u00e4tze sind verschieden.\n \nMethode bei Prozessen mit mehreren Outputs:\n \nZur Modellierung der Datens\u00e4tze zu Multi-Output Prozessen wird in GEMIS die Methode der Systemerweiterung verwendet. Hierbei werden Datens\u00e4tze, in denen jeweils alle Inputs, alle Outputs und alle Umweltaspekte eines Multi-Output Prozesses ausgewiesen sind, als \u201cBrutto\u201c bezeichnet. Durch Subtraktion von \u201aBonus\u2019-Prozessen, die jeweils einen der Outputs auf herk\u00f6mmliche Weise bereitstellen, entsteht ein Nettoprozess, in denen das substituierte Nebenprodukt als Gutschrift erscheint. Die Gutschrift ist dabei kein realer Output des Prozesses, sondern ein rechnerischer \u201aMerker\u2019. \n \nBeispiel: \n \nMulti-Output Prozess Biogas-BZ-MC-HKW-D-2020/brutto: Output ist 1 TJ Elektrizit\u00e4t und 0,6 TJ W\u00e4rme, der \u201cNetto\u201c-Datensatz soll sich aber nur auf die Elektrizit\u00e4t beziehen. Durch Subtraktion des Bonusprozesses W\u00e4rme-Bonus-Gas-Hzg-D-2020 mit dem Output W\u00e4rme(0,6 TJ) entsteht der \u201cNetto\u201c-Datensatz Biogas-BZ-MC-HKW-D-2020/Gas, f\u00fcr den als Output 1 TJ Elektrizit\u00e4t und 0,6 TJ \u201aGutschrift W\u00e4rme-Bonus-f\u00fcr-KWK (Bio)-2020 bei W\u00e4rme-Bonus-Gas-Hzg-D-2020\u2019 angegeben werden; die Gutschrift stellt keinen Stoff- oder Energiefluss des Prozesses dar, sie ist allein rechnerisch begr\u00fcndet.\n \n\n \nTransport:\n \nAngaben zu den angesetzten Transportdistanzen werden nicht gegeben.\n \nAbschneidekriterien:\n \nWasser wird in der Regel nur auf der Inputseite angegeben (etwa als K\u00fchlwasser), auch wenn es den Prozess wieder verl\u00e4sst als Abwasser.\n Weitere Angaben zu angewendeten Abschneidekriterien werden nicht gegeben.\n \nBesondere Nomenklatur:\n \nZahlreiche Abk\u00fcrzungen f\u00fcr Brennstoffe aus Biomasse und entsprechende Technologien.\n \nBesonderheiten auf Datensatzebene:\n \nDie Datens\u00e4tze sind mit Vorketten-Datens\u00e4tzen verkn\u00fcpft, in denen die jeweils ben\u00f6tigten Vorprodukte, Energien und Transportleistungen erzeugt werden. Die Daten zu den Umweltaspekten werden erstens \u201cdirekt\u201c (d.h., nur aus dem jeweiligen Prozess, falls dieser direkt zu Umweltaspekten beitr\u00e4gt) als auch \u201cmit Vorkette\u201c (d.h., einschlie\u00dflich aller vorausgehenden Prozesse) ausgewiesen. \n Negative Werte f\u00fcr Stofffl\u00fcsse kommen in GEMIS regelm\u00e4\u00dfig vor; sie entstehen durch die Anwendung von Systemerweiterung um Multi-Output Prozesse in Single Output Prozesse umzurechnen. \n Teilweise werden Aufwendungen f\u00fcr Produktionsmittel (Anlagen, Fahrzeuge etc.) aufgef\u00fchrt (als Stofffl\u00fcsse im Input); diese sind jedoch nicht auf die funktionelle Einheit bezogen, sondern werden als absolute Werte angegeben; sie werden nur als Input und nicht als Output (Entsorgung der Betriebsmittel) angegeben. \n Die durch die Herstellung dieser Produktionsmittel verursachten Umweltaspekte sind dagegen \u00fcber Leistung, j\u00e4hrliche Auslastung und Lebensdauer auf die funktionelle Einheit bezogen \n \nWeiterf\u00fchrende Hinweise und Literatur:\n \n#1: Fritsche, U.R., Schmidt, K.: Globales Emissions-Modell Integrierter Systeme (GEMIS), Version 4.2, Handbuch, Darmstadt, August 2004.\n #2: Fritsche, U.R., Schmidt, K.: Globales Emissions-Modell Integrierter Systeme (GEMIS), Version 4.1, Handbuch, Darmstadt, Darmstadt, Januar 2003.\n #3: Fritsche, U., et al.: Stoffstromanalyse zur nachhaltigen energetischen Nutzung von Biomasse, Verbundprojekt gef\u00f6rdert vom BMU im Rahmen des ZIP, Projekttr\u00e4ger: FZ J\u00fclich, Mai 2004, Anhangband zum Endbericht.\n #4: Fritsche, U., et al.: Umweltanalyse von Energie-, Transport- und Stoffsystemen: Gesamt-Emissions-Modell integrierter Systeme (GEMIS) Version 2.1 - erweiterter und aktualisierter Endbericht, U. Fritsche u.a., i.A. des Hessischen Ministeriums f\u00fcr Umwelt, Energie und Bundesangelegenheiten (HMUEB), ver\u00f6ffentlicht durch HMUEB, Wiesbaden 1995"
+
+
+def create_process_description(process: ProcessData) -> str:
+    sections: MarkdownData = {}
+
+    # Name
+    # ====
     process_name = cast(
         str, process.processInformation.dataSetInformation.name.baseName.get()
     )
@@ -221,37 +214,132 @@ def generate_example(process: ProcessData):
         synonyms = process.processInformation.dataSetInformation.synonyms.get()
         process_name += f" ({synonyms})"
 
-    geography = process.processInformation.geography.locationOfOperationSupplyOrProduction.location
-    class_info = process.processInformation.dataSetInformation.classificationInformation
+    sections["Name"] = process_name
 
+    # Description
+    # ===========
+    if general_comment := process.processInformation.dataSetInformation.generalComment:
+        general_comment = general_comment.get()
+        if general_comment and _default_general_comment not in general_comment:
+            sections["Description"] = general_comment
+
+    # Year
+    # ====
+    year = process.processInformation.time.referenceYear
+    until = process.processInformation.time.dataSetValidUntil
+
+    time_desc = str(year)
+    if until:
+        time_desc += f" - {until}"
+
+    sections["Year"] = [time_desc]
+    if time_representativeness := (
+        process.processInformation.time.timeRepresentativenessDescription
+    ):
+        time_representativeness = time_representativeness.get()
+        assert time_representativeness is not None
+        sections["Year"].append({"Representativeness": time_representativeness})
+
+    # Geography
+    # =========
+    geography = process.processInformation.geography.locationOfOperationSupplyOrProduction.location
+    sections["Geography"] = geography or "Unknown"
+
+    # Classification
+    # ==============
+    class_info = process.processInformation.dataSetInformation.classificationInformation
     if class_info.classification:
         classes = []
         for classification in class_info.classification:
-            classes.append(
-                " - " + " / ".join(item.value for item in classification.class_)
-            )
+            classes.append(" / ".join(item.value for item in classification.class_))
         classification = "\n".join(classes)
     else:
         classification = "Unknown"
 
-    process_user_prompt = user_prompt.format(
-        process_name=process_name,
-        process_year=process.processInformation.time.referenceYear,
-        process_geography=geography or "Unknown",
-        process_classification=classification,
-        input_flows="\n".join(
-            flow_repr(cast(Flow, flow))
-            for flow in flows_df.itertuples()
-            if flow.exchange_direction == "INPUT"
-        ),
-        output_flows="\n".join(
-            flow_repr(cast(Flow, flow))
-            for flow in flows_df.itertuples()
-            if flow.exchange_direction == "OUTPUT"
-        ),
-        len_exchanges_input=len(flows_df.loc[flows_df.exchange_direction == "INPUT"]),
-        len_exchanges_output=len(flows_df.loc[flows_df.exchange_direction == "OUTPUT"]),
+    sections["Class"] = classification
+
+    # Technology
+    # ==========
+    technology = process.processInformation.technology
+    technology_description = technology.technologyDescriptionAndIncludedProcesses
+    technology_applicability = technology.technologicalApplicability
+
+    sections["Technology"] = []
+
+    if technology_description:
+        technology_description = technology_description.get()
+        assert technology_description is not None
+        sections["Technology"].append(technology_description)
+
+    if technology_applicability:
+        technology_applicability = technology_applicability.get()
+        assert technology_applicability is not None
+        sections["Technology"].append({"Applicability": technology_applicability})
+
+    if not sections["Technology"]:
+        sections.pop("Technology")
+
+    # (flows)
+    flows_df = (
+        extract_process_flows(process)
+        .sort_values(by="exchange_resulting_amount", ascending=False)
+        .sort_values(by="exchange_classification_hierarchy")
     )
+
+    # Main Output
+    # ===========
+    if quantitative_reference := process.processInformation.quantitativeReference:
+        if quantitative_reference.functionalUnitOrOther:
+            functional_unit = quantitative_reference.functionalUnitOrOther.get()
+        else:
+            functional_unit = None
+
+        output_flow_ids = quantitative_reference.referenceToReferenceFlow
+        assert len(output_flow_ids) == 1
+        output_flow_id = output_flow_ids[0]
+        output_flow_uuid = next(
+            flow.referenceToFlowDataSet.refObjectId
+            for flow in process.exchanges.exchange
+            if flow.dataSetInternalID == output_flow_id
+        )
+        output_flow = Flow(
+            **flows_df.loc[flows_df["flow_uuid"] == output_flow_uuid].iloc[0].to_dict()
+        )
+
+        sections["Main Output"] = []
+        if functional_unit:
+            sections["Main Output"] = [functional_unit]
+
+        sections["Main Output"].append({"Main Output Flow": flow_repr(output_flow)})
+
+    # Flows
+    # =====
+    n_input_flows = len(flows_df.loc[flows_df.exchange_direction == "INPUT"])
+    n_output_flows = len(flows_df.loc[flows_df.exchange_direction == "OUTPUT"])
+
+    input_flows_list = "\n".join(
+        flow_repr(cast(Flow, flow))
+        for flow in flows_df.itertuples()
+        if flow.exchange_direction == "INPUT"
+    )
+    output_flows_list = "\n".join(
+        flow_repr(cast(Flow, flow))
+        for flow in flows_df.itertuples()
+        if flow.exchange_direction == "OUTPUT"
+    )
+    sections["Flows"] = {
+        "Inputs": str(n_input_flows),
+        "Outputs": str(n_output_flows),
+        "Input Flows": input_flows_list,
+        "Output Flows": output_flows_list,
+    }
+
+    return render_markdown(sections)
+
+
+def generate_example(process: ProcessData):
+    process_description = create_process_description(process)
+    process_user_prompt = user_prompt.format(process_description=process_description)
 
     return client.beta.chat.completions.parse(
         messages=[
