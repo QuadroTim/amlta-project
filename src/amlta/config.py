@@ -6,14 +6,23 @@ from typing import Self
 
 @dataclass
 class Config:
+    project_dir: Path
     data_dir: Path
 
-    def __init__(self, data_dir: PathLike | None = None):
+    def __init__(
+        self, project_dir: PathLike | None = None, data_dir: PathLike | None = None
+    ):
+        if project_dir is None:
+            project_dir = Path(__file__).parent.parent.parent
+        else:
+            project_dir = Path(project_dir)
+
         if data_dir is None:
-            data_dir = Path(__file__).parent.parent.parent / "data"
+            data_dir = project_dir / "data"
         else:
             data_dir = Path(data_dir)
 
+        self.project_dir = project_dir
         self.data_dir = data_dir
 
     def update(self, data_dir: PathLike | None = None) -> Self:

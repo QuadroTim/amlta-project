@@ -14,3 +14,5 @@ wheels/
 data.zip
 data/ILCD/
 data/processes.*
+
+eval/**/batch*/

@@ -11,13 +11,14 @@ from typing import (
     TypeVar,
 )
 
-from pydantic import BaseModel, ConfigDict, Field, GetCoreSchemaHandler
+from pydantic import BaseModel as _BaseModel
+from pydantic import ConfigDict, Field, GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
 
 from amlta.config import config
 
 
-class BaseModel(BaseModel):
+class BaseModel(_BaseModel):
     model_config: ClassVar[ConfigDict] = {
         "use_attribute_docstrings": True,
         "extra": "forbid",
@@ -45,8 +46,8 @@ class LocalizedTextList(UserList[LocalizedText]):
 
     def get(self, preferred_lang: str = "en") -> str | None:
         for text in self:
-            if text.lang == preferred_lang:
-                return text.value if text.value else None
+            if text.lang == preferred_lang and text.value:
+                return text.value
 
         return next((text.value for text in self if text.value), None)
 

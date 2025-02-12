@@ -7,5 +7,6 @@
     },
     "explorer.sortOrder": "type",
     "python.analysis.typeCheckingMode": "standard",
-    "jupyter.debugJustMyCode": false
+    "jupyter.debugJustMyCode": false,
+    "python.analysis.autoImportCompletions": true
 }
