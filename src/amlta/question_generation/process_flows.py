@@ -3,9 +3,8 @@ import random
 import time
 from os import PathLike
 from pathlib import Path
-from typing import Literal, NamedTuple, Sequence
+from typing import Literal, NamedTuple, Sequence, TypedDict
 
-import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI
 from openai.lib._parsing import type_to_response_format_param
@@ -164,24 +163,50 @@ class LCIQuestion(BaseModel):
     )
 
 
+class PropertyDict(TypedDict):
+    uuid: str
+    name: str
+    unit: str
+
+
+class FlowDict(TypedDict):
+    uuid: str
+    question_direction: Literal["INPUT", "OUTPUT", "BOTH"]
+    direction: Literal["INPUT", "OUTPUT"]
+    name: str
+    amount: float
+    property: PropertyDict
+
+
+class QuestionData(TypedDict):
+    process_uuid: str
+    general_query: str
+    specific_query: str
+    question: str
+    question_replaced_general: str
+    question_replaced_specific: str
+    aggregation: Literal["none", "count", "sum", "average"]
+    flows: list[FlowDict]
+
+
 class ProcessLCIQuestion(NamedTuple):
     process_uuid: str
     question: LCIQuestion
 
 
-def process_responses(
-    responses: Sequence[ProcessLCIQuestion],
+def process_questions(
+    questions: Sequence[ProcessLCIQuestion],
     **kwargs,
-) -> pd.DataFrame:
-    dfs = []
+) -> list[QuestionData]:
+    data = []
 
-    for response in responses:
-        data = []
+    for process_question in questions:
+        flow_data = []
 
-        process = ProcessData.from_uuid(response.process_uuid)
+        process = ProcessData.from_uuid(process_question.process_uuid)
         process_flows = extract_process_flows(process)
 
-        question = response.question
+        question = process_question.question
         specific_query = question.process_query.specific
         general_query = question.process_query.general
         question_text = question.question
@@ -220,46 +245,39 @@ def process_responses(
                     == flow_type.lower()
                 ]
             else:
-                raise ValueError("Invalid flow type")
+                raise ValueError(f"Invalid flow type {flow_output.flow!r}")
 
-            for _, flow in process_flows.iterrows():
-                data.append(
-                    {
-                        **kwargs,
-                        "process_uuid": response.process_uuid,
-                        "general_query": general_query,
-                        "specific_query": specific_query,
-                        "question": question_text,
-                        "question_replaced_general": question_replaced_general,
-                        "question_replaced_specific": question_replaced_specific,
-                        "question_direction": direction,
-                        "aggregation": aggregation,
-                        "exchange_direction": flow["exchange_direction"],
-                        "exchange_resulting_amount": flow["exchange_resulting_amount"],
-                        "exchange_type_of_flow": flow["exchange_type_of_flow"],
-                        "exchange_classification_hierarchy": flow[
-                            "exchange_classification_hierarchy"
-                        ],
-                        "flow_uuid": flow["flow_uuid"],
-                        "flow_description": flow["flow_description"],
-                        "flow_property_uuid": flow["flow_property_uuid"],
-                        "flow_property_name": flow["flow_property_name"],
-                        "flow_property_unit": flow["flow_property_unit"],
-                    }
-                )
-
-        dfs.append(
-            pd.DataFrame(data).drop_duplicates(
-                subset=[
-                    "process_uuid",
-                    "flow_uuid",
-                    "aggregation",
-                    "exchange_direction",
-                ]
+            flow_data.extend(
+                {
+                    "uuid": flow["flow_uuid"],
+                    "question_direction": direction,
+                    "direction": flow["exchange_direction"],
+                    "name": flow["flow_description"],
+                    "amount": flow["exchange_resulting_amount"],
+                    "property": {
+                        "uuid": flow["flow_property_uuid"],
+                        "name": flow["flow_property_name"],
+                        "unit": flow["flow_property_unit"],
+                    },
+                }
+                for _, flow in process_flows.iterrows()
             )
+
+        data.append(
+            {
+                **kwargs,
+                "process_uuid": process_question.process_uuid,
+                "general_query": general_query,
+                "specific_query": specific_query,
+                "question": question_text,
+                "question_replaced_general": question_replaced_general,
+                "question_replaced_specific": question_replaced_specific,
+                "aggregation": aggregation,
+                "flows": flow_data,
+            }
         )
 
-    return pd.concat(dfs)
+    return data
 
 
 client = OpenAI()
@@ -420,4 +438,4 @@ def process_batch_results(batch_output_file: PathLike):
             ProcessLCIQuestion(process_uuid=process_uuid, question=response)
         )
 
-    return process_responses(responses, batch=batch_output_file.stem)
+    return process_questions(responses, batch=batch_output_file.stem)
