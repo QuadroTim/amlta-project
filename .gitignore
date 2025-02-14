@@ -11,6 +11,8 @@ wheels/
 
 .env
 
-data.zip
+data*.zip
 data/ILCD/
 data/processes.*
+
+eval/**/batch*/
