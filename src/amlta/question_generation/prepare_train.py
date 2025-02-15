@@ -100,7 +100,7 @@ def process_questions(
     return data
 
 
-def process_batch_results(batch_output_file: PathLike):
+def process_batch_results(batch_output_file: PathLike) -> list[QuestionData]:
     batch_output_file = Path(batch_output_file)
     batch_input_filename = batch_output_file.stem + "_input"
 
@@ -147,7 +147,8 @@ def process_batch_results(batch_output_file: PathLike):
     return process_questions(responses)
 
 
-def get_training_batches(question: QuestionData, batch_size: int = 20):
+# TAPAS has a max token limit of 512, so we need to split the training data into batches
+def get_training_batches(question: QuestionData, batch_size: int = 20) -> pd.DataFrame:
     dfs = []
 
     query_params = question["flow_query_params"]
@@ -177,15 +178,23 @@ def get_training_batches(question: QuestionData, batch_size: int = 20):
         dfs.append(
             pd.DataFrame(
                 {
+                    "batch": question["batch"],
+                    "question_id": question["question_id"],
+                    "question_template": question["question"],
+                    "question_basic": question["question_replaced_basic"],
                     "question_general": question["question_replaced_general"],
                     "question_specific": question["question_replaced_specific"],
                     "process_uuid": question["process_uuid"],
                     "flows_start": start,
                     "flows_stop": stop,
+                    "aggregation": query_params["aggregation"],
                     "coordinates": [coordinates],
                     "answers": [answers.tolist()],
                 }
             )
         )
 
-    return pd.concat(dfs, ignore_index=True)
+    return pd.concat(dfs, ignore_index=True).assign(
+        # "list" should actually be "none"
+        aggregation=lambda x: x["aggregation"].replace("list", "none").str.upper()
+    )
