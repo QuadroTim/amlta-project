@@ -528,6 +528,29 @@ class ProcessData(BaseModel):
     contains reference to used location table for this dataset
     """
 
+    def get_main_output(self) -> Exchange | None:
+        if quantitative_reference := self.processInformation.quantitativeReference:
+            if quantitative_reference.functionalUnitOrOther:
+                functional_unit = quantitative_reference.functionalUnitOrOther.get()
+            else:
+                functional_unit = None
+
+            output_flow_ids = quantitative_reference.referenceToReferenceFlow
+            assert len(output_flow_ids) == 1
+            output_flow_id = output_flow_ids[0]
+            output_flow_uuid = next(
+                flow.referenceToFlowDataSet.refObjectId
+                for flow in self.exchanges.exchange
+                if flow.dataSetInternalID == output_flow_id
+            )
+            output_flow = next(
+                flow
+                for flow in self.exchanges.exchange
+                if flow.referenceToFlowDataSet.refObjectId == output_flow_uuid
+            )
+
+            return output_flow
+
     @classmethod
     def from_json_file(cls: type[Self], file_path: PathLike) -> Self:
         with open(file_path, "r") as file:

@@ -1,6 +1,6 @@
-import yaml
+from typing import Mapping
 
-from amlta.formatting.data import SectionData
+import yaml
 
 
 # https://github.com/yaml/pyyaml/issues/240
@@ -33,11 +33,11 @@ class SeparatedSectionsDumper(yaml.SafeDumper):
             super().write_line_break()
 
 
-def format_as_yaml(data: SectionData) -> str:
+def format_as_yaml(data: Mapping, line_between_sections=True) -> str:
     return yaml.dump(
         data,
-        Dumper=SeparatedSectionsDumper,
+        Dumper=SeparatedSectionsDumper if line_between_sections else yaml.SafeDumper,
         sort_keys=False,
         allow_unicode=True,
         width=1000,
-    )
+    ).strip()

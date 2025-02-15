@@ -8,6 +8,7 @@ from typing import Self
 class Config:
     project_dir: Path
     data_dir: Path
+    generated_dir: Path
 
     def __init__(
         self, project_dir: PathLike | None = None, data_dir: PathLike | None = None
@@ -22,8 +23,11 @@ class Config:
         else:
             data_dir = Path(data_dir)
 
+        generated_dir = data_dir / "generated"
+
         self.project_dir = project_dir
         self.data_dir = data_dir
+        self.generated_dir = generated_dir
 
     def update(self, data_dir: PathLike | None = None) -> Self:
         new = type(self)(data_dir=data_dir)

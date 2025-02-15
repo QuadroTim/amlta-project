@@ -15,4 +15,5 @@ data*.zip
 data/ILCD/
 data/processes.*
 
-eval/**/batch*/
+data/generated/*
+!data/generated/.gitkeep

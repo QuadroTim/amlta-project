@@ -125,20 +125,16 @@ def create_process_section(
 
     # Main Output
     # ===========
-    if quantitative_reference := process.processInformation.quantitativeReference:
+    if main_exchange := process.get_main_output():
+        quantitative_reference = process.processInformation.quantitativeReference
+
+        assert quantitative_reference is not None
         if quantitative_reference.functionalUnitOrOther:
             functional_unit = quantitative_reference.functionalUnitOrOther.get()
         else:
             functional_unit = None
 
-        output_flow_ids = quantitative_reference.referenceToReferenceFlow
-        assert len(output_flow_ids) == 1
-        output_flow_id = output_flow_ids[0]
-        output_flow_uuid = next(
-            flow.referenceToFlowDataSet.refObjectId
-            for flow in process.exchanges.exchange
-            if flow.dataSetInternalID == output_flow_id
-        )
+        output_flow_uuid = main_exchange.referenceToFlowDataSet.refObjectId
         output_flow = flows.Flow(
             **flows_df.loc[flows_df["flow_uuid"] == output_flow_uuid].iloc[0].to_dict()
         )
