@@ -7,7 +7,6 @@ from typing import (
     ClassVar,
 )
 
-from dotenv import load_dotenv
 from openai import OpenAI
 from openai.lib._parsing import type_to_response_format_param
 from openai.types import Batch
@@ -19,9 +18,6 @@ from amlta.formatting.data import create_flows_section, create_process_section
 from amlta.formatting.yaml import format_as_yaml
 from amlta.probas.processes import ProcessData, read_uuids
 from amlta.question_generation.query_params import generate_random_query_params
-
-load_dotenv()
-
 
 system_prompt = """
 <instructions>
@@ -170,12 +166,18 @@ class LCIQuestion(BaseModel):
     )
 
 
-client = OpenAI()
+def get_openai_client():
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    return OpenAI()
 
 
 def generate_question(
     process: ProcessData, model: str = "gpt-4o"
 ) -> ParsedChatCompletion[LCIQuestion]:
+    client = get_openai_client()
+
     process_description_data = create_process_section(process, include_flows=False)
     result_flows, query_params = generate_random_query_params(process)
 
@@ -302,6 +304,8 @@ def prepare_batch(
 
 
 def send_batch(batch_file: PathLike) -> Batch:
+    client = get_openai_client()
+
     job_file = client.files.create(file=batch_file, purpose="batch")
 
     while (job_file := client.files.retrieve(job_file.id)).status == "uploaded":
@@ -322,6 +326,8 @@ def send_batch(batch_file: PathLike) -> Batch:
 def retrieve_batch_results(
     batch_id: str, eval_dir: PathLike | None = None
 ) -> Path | None:
+    client = get_openai_client()
+
     qa_gen_dir = get_generated_questions_path()
 
     out_dir = qa_gen_dir / "batch_outputs"
