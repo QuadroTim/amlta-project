@@ -485,6 +485,17 @@ class LCIAResultsType(BaseModel):
 # --------------------------
 
 
+import functools
+
+
+@functools.cache
+def _uuid_to_file():
+    return {
+        (file.stem.split("_")[0] if "_" in file.stem else file.stem): file
+        for file in config.ilcd_processes_json_dir.iterdir()
+    }
+
+
 class ProcessData(BaseModel):
     model_config: ClassVar[ConfigDict] = {"extra": "forbid"}
 
@@ -558,11 +569,7 @@ class ProcessData(BaseModel):
 
     @classmethod
     def _find_files_by_uuids(cls: type[Self], uuids: list[str]) -> Iterator[PathLike]:
-        yield from (
-            file
-            for file in config.ilcd_processes_json_dir.iterdir()
-            if (file.stem.split("_")[0] if "_" in file.stem else file.stem) in uuids
-        )
+        yield from (_uuid_to_file()[uuid] for uuid in uuids)
 
     @classmethod
     def from_uuid(cls: type[Self], uuid: str) -> Self:
