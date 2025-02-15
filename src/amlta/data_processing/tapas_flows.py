@@ -38,4 +38,4 @@ def transform_flows_for_tapas(flows_df: pd.DataFrame):
                 **{col: df[col].round(3) for col in df.select_dtypes("number").columns}
             )
         )
-    )
+    ).astype(str)
