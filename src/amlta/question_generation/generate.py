@@ -23,8 +23,8 @@ system_prompt = """
 <instructions>
 You are a helpful assistant and Life Cycle Inventory (LCI) expert.
 
-You will be provided a Life Cycle Inventory (LCI) dataset process entry, the query params and the
-expected output for a question which you will generate.
+You will be provided a Life Cycle Inventory (LCI) dataset process entry and the query params
+for a question which you will generate.
 
 # Your Task
 - Pretend a LCI analyst has queried for the process you are given.
@@ -46,21 +46,24 @@ Think step by step;
 **Flow Question**
 1. Think about the domain of the process in combination with the query params.
 2. What are possible words an analyst would use that match the meaning of the query params?
-4. Phrase the question ACCORDING TO THE QUERY TYPE ('name', 'names', 'class', 'type') provided as
-     well as the direction and aggregation.
-   a) For 'name', the question should include the flow name, which can be rephrased to make a
+3. Phrase the question ACCORDING TO THE QUERY TYPE ('name', 'names', 'class', 'type') provided as
+    well as the direction and aggregation. Unless the direction is 'both', make sure to hint at
+    the direction in the question. The same applies for any other `flow_[...]` field in the params
+    as well as the aggregation.
+
+    Considering the different query types, please note:
+    a) For 'name', the question should include the flow name, which can be rephrased to make a
         realistic query (e.g., 'CO2' instead of 'carbon dioxide').
-   b) Analogous for 'names', however, ALL listed flows must be named in the question.
-   c) For 'class', the question should include the flow class, which can be rephrased to make a
+    b) Analogous for 'names', however, ALL listed flows must be named in the question.
+    c) For 'class', the question should include the flow class, which can be rephrased to make a
         realistic query (e.g., 'airborne emissions' instead of 'emissions to air').
         Moreover, pay attention to all class levels (separated by ' / ').
-   d) For 'type', the question should include the flow type, which can be rephrased also.
+    d) For 'type', the question should include the flow type, which can be rephrased also.
 
 **Process Search**
-NOTE: Completely ignore the flow results; the search keywords must be only about the process itself.
 1. Think about the domain of the process.
 2. In which context would the process be relevant? Think about different target users;
-     e.g., researchers, manufacturers, policy makers.
+    e.g., researchers, manufacturers, policy makers.
 3. What can be the keywords an analyst would use to find the process?
 4. Use the process metadata and context to phrase searches with different levels of specificity.
 5. The generated queries should be able to replace '<the process>' in the generated question.
@@ -86,14 +89,8 @@ user_prompt = """
 {query_params}
 </query_params>
 
-<flows_result>
-{flows_result}
-</flows_result>
-
-# Results
-The above results are purely for reference. The question should be based on the query context and the process data.
-
-Given the provided LCI process data, query context and results, what is a question an analyst could ask?
+Given the provided LCI process data and query context, what is a question an analyst could ask
+about the process flows that match the query params?
 
 Let's think step by step.
 """.strip()
@@ -185,7 +182,7 @@ def generate_question(
     process_user_prompt = user_prompt.format(
         process_description=process_description,
         query_params=format_as_yaml(query_params, line_between_sections=False),
-        flows_result=format_as_yaml(create_flows_section(result_flows)),
+        # flows_result=format_as_yaml(create_flows_section(result_flows)),
     )
 
     print(process_user_prompt)
