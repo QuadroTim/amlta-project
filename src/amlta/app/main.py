@@ -20,7 +20,7 @@ def main(args: argparse.Namespace = UNSET_ARGS):
     graph = get_graph(ollama_model=args.model, ollama_base_url=args.base_url)
 
     for msg in st.session_state.messages:
-        with st.chat_message(msg.role):
+        with st.chat_message(msg.type):
             st.markdown(msg.content)
 
     if user_input := st.chat_input("Type your message"):
