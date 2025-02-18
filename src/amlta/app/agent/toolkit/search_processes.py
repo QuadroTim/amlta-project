@@ -1,15 +1,10 @@
-from typing import Annotated
-
 from langchain_core.documents import Document
 from langchain_core.messages import ToolMessage
-from langchain_core.tools import BaseTool, BaseToolkit
-from langchain_core.tools.base import InjectedToolCallId
+from langchain_core.tools import BaseTool
 from langgraph.types import Command
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-
-class BaseToolInput(BaseModel):
-    tool_call_id: Annotated[str, InjectedToolCallId]
+from amlta.app.agent.toolkit.base import BaseToolInput
 
 
 class SearchProcessToolInput(BaseToolInput):
@@ -37,10 +32,3 @@ class SearchProcessTool(BaseTool):
                 ],
             }
         )
-
-
-class Toolkit(BaseToolkit):
-    search_process: SearchProcessTool = Field(default_factory=SearchProcessTool)
-
-    def get_tools(self) -> list[BaseTool]:
-        return (super().get_tools() or []) + [self.search_process]

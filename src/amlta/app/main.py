@@ -1,12 +1,14 @@
-import argparse
+import argparse  # noqa: I001
 
 import streamlit as st
-from langchain_core.messages import HumanMessage
-
-from amlta.app.graph import get_graph
-from amlta.app.langgraph_callback import get_streamlit_cb
 
 st.set_page_config(page_title="PROBAS Copilot")
+
+from langchain_core.messages import HumanMessage
+
+from amlta.app.agent.graph import graph
+from amlta.app.langgraph_callback import get_streamlit_cb
+
 st.title("PROBAS Copilot")
 
 if "messages" not in st.session_state:
@@ -17,7 +19,14 @@ UNSET_ARGS = argparse.Namespace(model=None, base_url=None)
 
 
 def main(args: argparse.Namespace = UNSET_ARGS):
-    graph = get_graph(ollama_model=args.model, ollama_base_url=args.base_url)
+    config = {
+        "ollama_model": args.model,
+        "ollama_base_url": args.base_url,
+    }
+
+    g = graph.with_config(
+        configurable={key: value for key, value in config.items() if value is not None}
+    )
 
     for msg in st.session_state.messages:
         with st.chat_message(msg.type):
@@ -31,8 +40,11 @@ def main(args: argparse.Namespace = UNSET_ARGS):
             st.markdown(user_input)
 
         with st.chat_message("assistant"):
-            resp = graph.invoke(
-                {"messages": st.session_state.messages},
+            resp = g.invoke(
+                {
+                    "messages": st.session_state.messages,
+                    "initial_question": user_input,
+                },
                 config={"callbacks": [get_streamlit_cb(st.empty())]},
             )
             message = resp["messages"][-1]
@@ -46,7 +58,7 @@ def launch():
     parser.add_argument(
         "--model", type=str, default="llama3.2", help="Ollama model to use"
     )
-    parser.add_argument("--base_url", type=str, default=None, help="Ollama base URL")
+    parser.add_argument("--base-url", type=str, default=None, help="Ollama base URL")
 
     args = parser.parse_args()
     main(args)
