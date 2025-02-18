@@ -46,9 +46,7 @@ def launch():
     parser.add_argument(
         "--model", type=str, default="llama3.2", help="Ollama model to use"
     )
-    parser.add_argument(
-        "--base_url", type=str, default="127.0.0.1:11434", help="Ollama base URL"
-    )
+    parser.add_argument("--base_url", type=str, default=None, help="Ollama base URL")
 
     args = parser.parse_args()
     main(args)
