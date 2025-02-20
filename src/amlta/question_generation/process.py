@@ -16,12 +16,12 @@ from amlta.question_generation.generate import LCIQuestion, get_generated_questi
 from amlta.question_generation.query_params import FlowQueryParams, get_flows_for_query
 
 
-@functools.lru_cache(maxsize=128)
+@functools.lru_cache(maxsize=512)
 def get_process(process_uuid: str) -> processes.ProcessData:
     return processes.ProcessData.from_uuid(process_uuid)
 
 
-@functools.lru_cache(maxsize=128)
+@functools.lru_cache(maxsize=512)
 def get_flows_df(process_uuid: str) -> pd.DataFrame:
     process = get_process(process_uuid)
     return flows.extract_process_flows(process)
@@ -49,7 +49,24 @@ class QuestionData(TypedDict):
     question_replaced_specific: str
 
 
-def process_questions(
+def list_batch_outputs() -> list[Path]:
+    out_dir = get_generated_questions_path() / "out"
+    return [file for file in out_dir.glob("*.jsonl")]
+
+
+def load_batches() -> list[QuestionData]:
+    batches = list_batch_outputs()
+    data = []
+
+    for batch_file in batches:
+        data.extend(
+            json.loads(line) for line in batch_file.read_text().strip().splitlines()
+        )
+
+    return data
+
+
+def _compile_and_save_question_results(
     questions: Sequence[LCIQuestionBatchResult],
 ) -> list[QuestionData]:
     data: list[QuestionData] = []
@@ -100,14 +117,14 @@ def process_questions(
     return data
 
 
-def process_batch_results(batch_output_file: PathLike) -> list[QuestionData]:
+def process_and_save_batch_question_results(
+    batch_output_file: PathLike,
+) -> list[QuestionData]:
     batch_output_file = Path(batch_output_file)
-    batch_input_filename = batch_output_file.stem + "_input"
+    batch_input_filename = batch_output_file.stem + "_input.jsonl"
 
     qa_gen_dir = get_generated_questions_path()
-    batch_input_file = (qa_gen_dir / "batch_inputs" / batch_input_filename).with_suffix(
-        ".jsonl"
-    )
+    batch_input_file = qa_gen_dir / "batch_inputs" / batch_input_filename
 
     batch_input = [
         json.loads(line) for line in batch_input_file.read_text().strip().splitlines()
@@ -144,11 +161,13 @@ def process_batch_results(batch_output_file: PathLike) -> list[QuestionData]:
             )
         )
 
-    return process_questions(responses)
+    return _compile_and_save_question_results(responses)
 
 
 # TAPAS has a max token limit of 512, so we need to split the training data into batches
-def get_training_batches(question: QuestionData, batch_size: int = 20) -> pd.DataFrame:
+def build_training_batched_dfs(
+    question: QuestionData, batch_size: int = 15
+) -> pd.DataFrame:
     dfs = []
 
     query_params = question["flow_query_params"]
@@ -198,3 +217,17 @@ def get_training_batches(question: QuestionData, batch_size: int = 20) -> pd.Dat
         # "list" should actually be "none"
         aggregation=lambda x: x["aggregation"].replace("list", "none").str.upper()
     )
+
+
+def build_training_batched_dfs_all(
+    data: list[QuestionData] | None = None, batch_size: int = 15
+) -> pd.DataFrame:
+    if data is None:
+        data = load_batches()
+
+    dfs = []
+
+    for question in data:
+        dfs.append(build_training_batched_dfs(question, batch_size=batch_size))
+
+    return pd.concat(dfs, ignore_index=True)

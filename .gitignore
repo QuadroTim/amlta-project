@@ -17,3 +17,8 @@ data/processes.*
 
 data/generated/*
 !data/generated/.gitkeep
+
+data/qdrant*/*
+!data/qdrant*/meta.json
+
+data/tapas-ft/checkpoints/*
