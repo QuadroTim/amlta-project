@@ -3,9 +3,9 @@ from typing import Annotated
 import streamlit as st
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import BaseTool
+from langchain_core.tools.base import ArgsSchema
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
-from pydantic import BaseModel
 from transformers import TapasForQuestionAnswering, TapasTokenizer
 
 from amlta.app.agent.state import AgentState, FlowsResult
@@ -48,7 +48,7 @@ class SearchFlowsToolInput(BaseToolInput):
 
 
 class SearchFlowsTool(BaseTool):
-    args_schema: type[BaseModel] = SearchFlowsToolInput
+    args_schema: ArgsSchema | None = SearchFlowsToolInput
 
     name: str = "search_flows"
     description: str = TOOL_DESCRIPTION
@@ -66,7 +66,8 @@ class SearchFlowsTool(BaseTool):
         return Command(
             update={
                 "messages": ToolMessage(
-                    content=f"Found {len(flows)} flows.", tool_call_id=tool_call_id
+                    content=f"Found {len(flows)} flows and identified aggregation {aggregation}.",
+                    tool_call_id=tool_call_id,
                 ),
                 "flows_result": FlowsResult(
                     flow_uuids=[flow.flow_uuid for flow in flows],

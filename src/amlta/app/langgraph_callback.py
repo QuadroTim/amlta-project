@@ -3,14 +3,12 @@
 import inspect
 from typing import Callable, TypeVar
 
-from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
 from langchain_core.callbacks.base import BaseCallbackHandler
-from streamlit.delta_generator import DeltaGenerator
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
 
 # Define a function to wrap and add context to Streamlit's integration with LangGraph
-def get_streamlit_cb(parent_container: DeltaGenerator) -> BaseCallbackHandler:
+def get_streamlit_cb(handler: BaseCallbackHandler) -> BaseCallbackHandler:
     """
     Creates a Streamlit callback handler that integrates fully with any LangChain ChatLLM integration,
     updating the provided Streamlit container with outputs such as tokens, model responses,
@@ -69,7 +67,7 @@ def get_streamlit_cb(parent_container: DeltaGenerator) -> BaseCallbackHandler:
         return wrapper
 
     # Create an instance of Streamlit's StreamlitCallbackHandler with the provided Streamlit container
-    st_cb = StreamlitCallbackHandler(parent_container)
+    st_cb = handler  #  StreamlitCallbackHandler(parent_container)
 
     # Iterate over all methods of the StreamlitCallbackHandler instance
     for method_name, method_func in inspect.getmembers(

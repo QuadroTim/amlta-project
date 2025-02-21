@@ -1,3 +1,5 @@
+from abc import ABC
+
 from langchain_core.document_loaders.base import BaseLoader
 from langchain_core.documents import Document
 
@@ -9,9 +11,20 @@ from amlta.probas.glossary import read_glossary
 from amlta.probas.processes import ProcessData, read_uuids
 
 
-class YamlProcessLoader(BaseLoader):
+class HasLengthLoader(BaseLoader, ABC):
+    def __len__(self):
+        raise NotImplementedError
+
+
+class YamlProcessLoader(HasLengthLoader):
+    def __init__(self):
+        self.uuids = read_uuids()
+
+    def __len__(self):
+        return len(self.uuids)
+
     def lazy_load(self):
-        for uuid in read_uuids():
+        for uuid in self.uuids:
             process = ProcessData.from_uuid(uuid)
             process_sections = create_process_section(process, include_flows=False)
 
@@ -22,9 +35,15 @@ class YamlProcessLoader(BaseLoader):
             )
 
 
-class MarkdownProcessLoader(BaseLoader):
+class MarkdownProcessLoader(HasLengthLoader):
+    def __init__(self):
+        self.uuids = read_uuids()
+
+    def __len__(self):
+        return len(self.uuids)
+
     def lazy_load(self):
-        for uuid in read_uuids():
+        for uuid in self.uuids:
             process = ProcessData.from_uuid(uuid)
             process_sections = create_process_section(process, include_flows=False)
 
@@ -35,10 +54,15 @@ class MarkdownProcessLoader(BaseLoader):
             )
 
 
-class YamlGlossaryLoader(BaseLoader):
+class YamlGlossaryLoader(HasLengthLoader):
+    def __init__(self):
+        self.glossary = read_glossary()
+
+    def __len__(self):
+        return len(self.glossary)
+
     def lazy_load(self):
-        glossary = read_glossary()
-        for term, definition in glossary.items():
+        for term, definition in self.glossary.items():
             uuid = uuids.get_uuid(term).hex
 
             yield Document(
@@ -51,10 +75,15 @@ class YamlGlossaryLoader(BaseLoader):
             )
 
 
-class MarkdownGlossaryLoader(BaseLoader):
+class MarkdownGlossaryLoader(HasLengthLoader):
+    def __init__(self):
+        self.glossary = read_glossary()
+
+    def __len__(self):
+        return len(self.glossary)
+
     def lazy_load(self):
-        glossary = read_glossary()
-        for term, definition in glossary.items():
+        for term, definition in self.glossary.items():
             uuid = uuids.get_uuid(term).hex
             content = f"## {term}\n{definition}"
 

@@ -19,8 +19,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 tapas_wikisql_name = "google/tapas-base-finetuned-wikisql-supervised"
 tapas_base_name = "google/tapas-base"
 
-tapas_wikisql_name = "google/tapas-base-finetuned-wikisql-supervised"
-tapas_base_name = "google/tapas-base"
 checkpoint = tapas_ft_checkpoints_dir / "tapas-epoch=00-val_loss=0.38.ckpt"
 
 
