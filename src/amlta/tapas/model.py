@@ -10,16 +10,17 @@ from transformers import (
     TapasTokenizer,
 )
 
-from amlta.tapas.base import tapas_ft_checkpoints_dir
+# from amlta.tapas.base import tapas_ft_checkpoints_dir
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-tapas_wikisql_name = "google/tapas-base-finetuned-wikisql-supervised"
-tapas_base_name = "google/tapas-base"
+# tapas_base_name = "google/tapas-base"
+# checkpoint = tapas_ft_checkpoints_dir / "tapas-epoch=00-val_loss=0.38.ckpt"
 
-checkpoint = tapas_ft_checkpoints_dir / "tapas-epoch=00-val_loss=0.38.ckpt"
+tapas_wikisql_name = "google/tapas-base-finetuned-wikisql-supervised"
+hf_finetuned_name = "woranov/tapas-finetuned-probas-supervised"
 
 
 class TapasLightningModule(pl.LightningModule):
@@ -70,21 +71,18 @@ class TapasLightningModule(pl.LightningModule):
         return optimizer
 
 
-def load_tapas_config() -> PretrainedConfig:
-    return TapasConfig.from_pretrained(tapas_wikisql_name)
+def load_tapas_config(name=hf_finetuned_name) -> PretrainedConfig:
+    return TapasConfig.from_pretrained(name)
 
 
-def load_tapas_tokenizer() -> TapasTokenizer:
-    return TapasTokenizer.from_pretrained(tapas_wikisql_name)
+def load_tapas_tokenizer(name=tapas_wikisql_name) -> TapasTokenizer:
+    return TapasTokenizer.from_pretrained(name)
 
 
-def load_tapas_model() -> TapasLightningModule:
+def load_tapas_model(name=hf_finetuned_name) -> TapasLightningModule:
     base_model = TapasForQuestionAnswering.from_pretrained(
-        tapas_base_name,
-        config=load_tapas_config(),
+        name,
+        config=load_tapas_config(name),
     ).to(device)  # type: ignore
 
-    return TapasLightningModule.load_from_checkpoint(
-        str(checkpoint),
-        model=base_model,
-    ).to(device)
+    return TapasLightningModule(base_model, learning_rate=3.5481338923357546e-06)
