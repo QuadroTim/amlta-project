@@ -166,17 +166,30 @@ def process_and_save_batch_question_results(
 
 # TAPAS has a max token limit of 512, so we need to split the training data into batches
 def build_training_batched_dfs(
-    question: QuestionData, batch_size: int = 15
+    question: QuestionData, batch_size: int = 15, shuffle_rows=False
 ) -> pd.DataFrame:
     dfs = []
 
+    shuffle_seed = 42
     query_params = question["flow_query_params"]
 
-    flows_df = get_flows_df(question["process_uuid"])
-    flows_df_tapas = transform_flows_for_tapas(flows_df)
+    flows_df = (
+        get_flows_df(question["process_uuid"])
+        .reset_index()
+        .rename(columns={"index": "original_index"})
+    )
+    if shuffle_rows:
+        flows_df = flows_df.sample(frac=1, random_state=shuffle_seed).reset_index(
+            drop=True
+        )
+
+    flows_df_tapas = transform_flows_for_tapas(flows_df).assign(
+        original_index=flows_df["original_index"]
+    )
+
     flows_df_filtered = get_flows_for_query(flows_df, query_params)
 
-    flow_uuids = flows_df_filtered["flow_uuid"].values.tolist()
+    flow_indices = flows_df_filtered["original_index"].values.tolist()
     flows_col_index = flows_df_tapas.columns.get_loc("Amount")
 
     batch_gen = (
@@ -189,9 +202,16 @@ def build_training_batched_dfs(
 
     for (start, stop), batch in batch_gen:
         batch = batch.reset_index(drop=True)
-        batch_flows = batch.loc[batch["flow_uuid"].isin(flow_uuids)]
+        batch_flows = batch.loc[batch["original_index"].isin(flow_indices)]
+
         batch_flows_rows = [int(x) for x in batch_flows.index.values.tolist()]
         coordinates = [(row, flows_col_index) for row in batch_flows_rows]
+
+        original_rows = [
+            int(row["original_index"]) for _, row in batch_flows.iterrows()
+        ]
+        original_coordinates = [(row, flows_col_index) for row in original_rows]
+
         answers = flows_df_tapas.iloc[start:stop]["Amount"].values[batch_flows_rows]
 
         dfs.append(
@@ -208,6 +228,8 @@ def build_training_batched_dfs(
                     "flows_stop": stop,
                     "aggregation": query_params["aggregation"],
                     "coordinates": [coordinates],
+                    "original_coordinates": [original_coordinates],
+                    "shuffle_seed": [shuffle_seed],
                     "answers": [answers.tolist()],
                 }
             )
@@ -220,7 +242,7 @@ def build_training_batched_dfs(
 
 
 def build_training_batched_dfs_all(
-    data: list[QuestionData] | None = None, batch_size: int = 15
+    data: list[QuestionData] | None = None, batch_size: int = 15, shuffle_rows=False
 ) -> pd.DataFrame:
     if data is None:
         data = load_batches()
@@ -228,6 +250,10 @@ def build_training_batched_dfs_all(
     dfs = []
 
     for question in data:
-        dfs.append(build_training_batched_dfs(question, batch_size=batch_size))
+        dfs.append(
+            build_training_batched_dfs(
+                question, batch_size=batch_size, shuffle_rows=shuffle_rows
+            )
+        )
 
     return pd.concat(dfs, ignore_index=True)
