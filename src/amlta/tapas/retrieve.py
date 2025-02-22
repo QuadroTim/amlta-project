@@ -6,7 +6,6 @@ import torch
 from transformers import TapasForQuestionAnswering, TapasTokenizer
 
 from amlta.data_processing.tapas_flows import transform_flows_for_tapas
-from amlta.probas.flows import Flow
 from amlta.tapas.base import id2aggregation
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -71,8 +70,7 @@ def retrieve_rows(
         ]
 
     aggregation, _ = aggregation_candidates.most_common(1)[0]
-    filtered_df = df.iloc[row_indices]
+    # filtered_df = df.iloc[row_indices]
+    # flows = [row["flow_uuid"] for _, row in filtered_df.iterrows()]
 
-    flows = [Flow(**row.to_dict()) for _, row in filtered_df.iterrows()]
-
-    return flows, aggregation
+    return row_indices, aggregation

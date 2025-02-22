@@ -8,5 +8,11 @@
     "explorer.sortOrder": "type",
     "python.analysis.typeCheckingMode": "standard",
     "jupyter.debugJustMyCode": false,
-    "python.analysis.autoImportCompletions": true
+    "python.analysis.autoImportCompletions": true,
+    "search.exclude": {
+        "**/.venv": true
+    },
+    "python.analysis.aiCodeActions": {},
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.typeEvaluation.deprecateTypingAliases": true
 }

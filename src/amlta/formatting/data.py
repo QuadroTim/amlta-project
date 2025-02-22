@@ -55,13 +55,6 @@ def create_process_section(
 
     sections["Name"] = process_name
 
-    # Description
-    # ===========
-    if general_comment := process.processInformation.dataSetInformation.generalComment:
-        general_comment = general_comment.get()
-        if general_comment and _default_general_comment not in general_comment:
-            sections["Description"] = general_comment
-
     # Year
     # ====
     year = process.processInformation.time.referenceYear
@@ -144,6 +137,13 @@ def create_process_section(
             sections["Main Output"].append(functional_unit)
 
         sections["Main Output"].append({"Main Output Flow": flow_repr(output_flow)})
+
+    # Description
+    # ===========
+    if general_comment := process.processInformation.dataSetInformation.generalComment:
+        general_comment = general_comment.get()
+        if general_comment and _default_general_comment not in general_comment:
+            sections["Description"] = general_comment
 
     # Flows
     # =====

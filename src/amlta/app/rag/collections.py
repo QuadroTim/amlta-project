@@ -11,8 +11,8 @@ from tqdm.auto import tqdm
 from amlta.app.rag.client import get_qdrant_client
 from amlta.app.rag.loaders import (
     HasLengthLoader,
-    MarkdownGlossaryLoader,
-    MarkdownProcessLoader,
+    YamlGlossaryLoader,
+    YamlProcessLoader,
 )
 
 # class NomicHfEmbeddings(HuggingFaceEmbeddings):
@@ -142,8 +142,10 @@ def get_collections(client: QdrantBase):
         ),
     )
 
-    glossary_loader = MarkdownGlossaryLoader()
-    process_loader = MarkdownProcessLoader()
+    # glossary_loader = MarkdownGlossaryLoader()
+    # process_loader = MarkdownProcessLoader()
+    glossary_loader = YamlGlossaryLoader()
+    process_loader = YamlProcessLoader()
     load_documents(collections.glossary, glossary_loader)
     load_documents(collections.processes, process_loader)
 
@@ -164,7 +166,7 @@ def iter_collection(store: QdrantVectorStore):
 
 def main():
     # collections = get_collections(get_qdrant_client("data/qdrant-nomic"))
-    collections = get_collections(get_qdrant_client())
+    collections = get_collections(get_qdrant_client("data/qdrant-yaml"))
     process_store = collections.processes
 
     while query := input("Enter a query: "):
