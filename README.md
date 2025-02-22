@@ -23,6 +23,16 @@ $ python -m pip install -e .
 $ pre-commit install
 ```
 
+# App
+
+1. Open the [`colab_proxy.ipynb` in Colab](https://colab.research.google.com/github/woranov/amlta-project/blob/main/notebooks/colab_proxy.ipynb)
+2. Run Ollama and pull the model
+3. Run ngrok and copy the URL
+4. Run the app. Example:
+    ```console
+    $ amlta-app -- --model "qwen2.5:32b-instruct-q3_K_M" --base-url "http://random-domain.ngrok-free.app"
+    ```
+
 
 # Packages
 
