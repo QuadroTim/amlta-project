@@ -1,5 +1,6 @@
 import json
-from typing import TypedDict, cast
+from collections import Counter
+from typing import Literal, TypedDict, cast
 
 import streamlit as st
 from langchain_core.messages import SystemMessage
@@ -63,12 +64,23 @@ PROBAS database.
 
 The query should completely ignore specifics about flows (i.e., inputs/outputs) and focus only on
 the process itself.
+
+Return only the rewritten query in `query` and a include your reasoning and thought process in
+`justification`.
 """.strip()
 
 
+class RewrittenProcessQuery(BaseModel):
+    justification: str = Field(
+        description="Why this query is suitable for searching processes"
+    )
+    query: str = Field(description="Rewritten process query")
+
+
 @task
-def rewrite_process_query(user_question: str) -> str:
-    llm = get_ollama()
+def rewrite_process_query(user_question: str) -> RewrittenProcessQuery:
+    llm = get_ollama().with_structured_output(RewrittenProcessQuery)
+
     retriever = collections.glossary.as_retriever(
         search_type="mmr", search_kwargs={"k": 5}
     )
@@ -96,18 +108,29 @@ def rewrite_process_query(user_question: str) -> str:
         | llm
     )
 
-    return cast(str, chain.invoke(user_question).content)
+    return cast(RewrittenProcessQuery, chain.invoke(user_question))
 
 
 rewrite_flows_query_system_prompt = """
 You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
 life cycle inventory database.
 
-Given the user question, formulate a neutral natural question query -- that is, a query that
-excludes the specific process itself. Furthermore, the query must match the syntax explained in the
-schema field description:
+## Instructions ##
+1. Analyze the user question and categorize it into one of the following categories:
+    a) the user asks for one or more specific flows. Multiple flows ARE ALLOWED and MUST NOT be
+       splitted
+    b) the user asks for one specific class of flows
+    c) the user asks for one specific type of flow (elementary flow or wast flow)
+2. If and only if the question contains multiple categories, decompose the question into multiple
+    queries, one for each category.
+3. Given the (decomposed) question, formulate a neutral natural question query -- that is, a query that
+    excludes the specific process itself. Furthermore, the query must match the syntax explained in the
+    schema field description:
 
 The `query` must be in the format 'What <is/are> the [input/output] [<aggregation>] <query> of the process?'.
+For `join_type` if there are multiple subqueries, you can use 'intersection' or 'union'. Think about
+if the user wants to know all the flows of all subqueries separately (join_type='union') or the users
+wants a single results where both subqueries are applied as filters (join_type='intersection').
 
 Examples:
 - "What are the total output emissions to air of the process?"
@@ -127,10 +150,10 @@ Examples:
 
 
 class FlowsQuery(BaseModel):
-    query: str = Field(description=flow_query_field_description)
     justification: str = Field(
         description="Why this query is suitable for searching flows"
     )
+    query: str = Field(description=flow_query_field_description)
 
     @field_validator("query", mode="after")
     @classmethod
@@ -141,10 +164,17 @@ class FlowsQuery(BaseModel):
         return query
 
 
+class FlowQueries(BaseModel):
+    queries: list[FlowsQuery] = Field(description="List of flow queries")
+    join_type: Literal["intersection", "union"] = Field(
+        "union", description="Join type for the queries"
+    )
+
+
 @task
-def rewrite_flows_query(user_question: str) -> FlowsQuery:
+def rewrite_flows_query(user_question: str) -> FlowQueries:
     llm = get_ollama().with_structured_output(
-        FlowsQuery, method="json_schema", include_raw=True
+        FlowQueries, method="json_schema", include_raw=True
     )
     chain = base_prompt | llm
     history = []
@@ -173,7 +203,7 @@ def rewrite_flows_query(user_question: str) -> FlowsQuery:
                 )
             )
         else:
-            return cast(FlowsQuery, resp["parsed"])
+            return cast(FlowQueries, resp["parsed"])
     else:
         raise RuntimeError("Failed to rewrite flows query after 3 attempts")
 
@@ -230,10 +260,10 @@ def select_process(
 
 class Output(TypedDict):
     initial_question: str
-    rewritten_process_query: str
+    rewritten_process_query: RewrittenProcessQuery
     selected_process: SelectedProcess
     selected_process_uuid: str
-    rewritten_flows_query: FlowsQuery
+    rewritten_flows_queries: FlowQueries
     flows_indices: list[int]
     aggregation: str
 
@@ -243,7 +273,8 @@ def main(user_question: str) -> Output:
     rewritten_process_query_fut = rewrite_process_query(user_question)
     rewritten_flows_query_fut = rewrite_flows_query(user_question)
 
-    rewritten_process_query = rewritten_process_query_fut.result()
+    rewritten_process_query_resp = rewritten_process_query_fut.result()
+    rewritten_process_query = rewritten_process_query_resp.query
 
     candidate_processes_docs = collections.processes.similarity_search(
         rewritten_process_query, k=5
@@ -261,28 +292,45 @@ def main(user_question: str) -> Output:
     selected_process = candidate_processes[selected_process_resp.index]
     selected_process_uuid = selected_process.processInformation.dataSetInformation.UUID
 
-    rewritten_flows_query = rewritten_flows_query_fut.result()
+    rewritten_flows_queries = rewritten_flows_query_fut.result()
     model = load_tapas_model()
     tokenizer = load_tapas_tokenizer()
     flows_df = extract_process_flows(selected_process)
 
-    flow_indices, aggregation = retrieve_rows(
-        flows_df,
-        rewritten_flows_query.query,
-        model=model,
-        tokenizer=tokenizer,
-        threshold=0.75,
+    all_indices = None
+    aggregations = Counter()
+    set_operator = (
+        set.intersection if rewritten_flows_queries.join_type == "and" else set.union
     )
-    print(flows_df.iloc[flow_indices])
 
+    for query in rewritten_flows_queries.queries:
+        flow_indices, aggregation = retrieve_rows(
+            flows_df,
+            query.query,
+            model=model,
+            tokenizer=tokenizer,
+            threshold=0.75,
+        )
+        aggregations[aggregation] += 1
+
+        if all_indices is None:
+            all_indices = set(flow_indices)
+        else:
+            all_indices = set_operator(all_indices, set(flow_indices))
+
+        # sub_dfs.append(flows_df.iloc[flow_indices])
+
+    assert all_indices is not None
+    flow_indices = sorted(all_indices)
+    aggregation = aggregations.most_common(1)[0][0]
     # filtered_df = flows_df.iloc[flow_indices].copy().reset_index(drop=True)
 
     return {
         "initial_question": user_question,
-        "rewritten_process_query": rewritten_process_query,
+        "rewritten_process_query": rewritten_process_query_resp,
         "selected_process": selected_process_resp,
         "selected_process_uuid": selected_process_uuid,
-        "rewritten_flows_query": rewritten_flows_query,
+        "rewritten_flows_queries": rewritten_flows_queries,
         "flows_indices": flow_indices,
         "aggregation": aggregation,
     }

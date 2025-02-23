@@ -141,7 +141,7 @@ def main(args: argparse.Namespace = UNSET_ARGS):
                 st.write(
                     f"Rewritten process query: `{resp['rewritten_process_query']}`"
                 )
-                st.write(f"Rewritten flows query: `{resp['rewritten_flows_query']}`")
+                st.write(f"Rewritten flows query: `{resp['rewritten_flows_queries']}`")
                 st.write(
                     f"Selected process: `{process.processInformation.dataSetInformation.name.baseName.get()}`"
                 )
