@@ -1,6 +1,8 @@
+import asyncio
 import json
 from collections import Counter
-from typing import Literal, TypedDict, cast
+from collections.abc import Awaitable
+from typing import cast
 
 import streamlit as st
 from langchain_core.messages import SystemMessage
@@ -8,13 +10,29 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.func import entrypoint, task
-from pydantic import BaseModel, Field, field_validator
+from langgraph.types import StreamWriter
 from transformers import (
     TapasForQuestionAnswering,
     TapasTokenizer,
 )
 
-from amlta.app.agent.core import collections
+from amlta.app.agent.core import (
+    AgentEvent,
+    AgentFinishedEvent,
+    AgentOutput,
+    FlowQueries,
+    FlowsQuery,
+    ProcessCandidatesFetchedEvent,
+    RewritingFlowsQueriesEvent,
+    RewritingProcessQueryEvent,
+    RewrittenFlowsQueriesEvent,
+    RewrittenProcessQuery,
+    RewrittenProcessQueryEvent,
+    SelectedProcess,
+    SelectedProcessEvent,
+    SelectingProcessEvent,
+    collections,
+)
 from amlta.app.llm import get_ollama
 from amlta.formatting.data import create_process_section
 from amlta.probas.flows import extract_process_flows
@@ -55,30 +73,36 @@ base_prompt = ChatPromptTemplate(
 )
 
 
-rewrite_process_query_system_prompt = """
+rewrite_process_query_system_prompt = f"""
 You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
 life cycle inventory database.
 
+## Instructions ##
 Your task is to rewrite the user question to make it more suitable for searching processes in the
 PROBAS database.
 
+## Output ##
 The query should completely ignore specifics about flows (i.e., inputs/outputs) and focus only on
 the process itself.
+
+## Output format ##
+`query`: {RewrittenProcessQuery.model_fields["query"].description}
+`justification`: {RewrittenProcessQuery.model_fields["justification"].description}
 
 Return only the rewritten query in `query` and a include your reasoning and thought process in
 `justification`.
 """.strip()
 
 
-class RewrittenProcessQuery(BaseModel):
-    justification: str = Field(
-        description="Why this query is suitable for searching processes"
-    )
-    query: str = Field(description="Rewritten process query")
+noop_writer = lambda x: None
 
 
 @task
-def rewrite_process_query(user_question: str) -> RewrittenProcessQuery:
+async def rewrite_process_query(
+    user_question: str, writer: StreamWriter = noop_writer
+) -> RewrittenProcessQuery:
+    writer(AgentEvent(event=RewritingProcessQueryEvent()))
+
     llm = get_ollama().with_structured_output(RewrittenProcessQuery)
 
     retriever = collections.glossary.as_retriever(
@@ -104,14 +128,17 @@ def rewrite_process_query(user_question: str) -> RewrittenProcessQuery:
         }
         | RunnableLambda(human_template)
         | base_prompt.partial(system_prompt=rewrite_process_query_system_prompt)
-        | inspect_prompt
+        # | inspect_prompt
         | llm
     )
 
-    return cast(RewrittenProcessQuery, chain.invoke(user_question))
+    res = cast(RewrittenProcessQuery, await chain.ainvoke(user_question))
+    writer(AgentEvent(event=RewrittenProcessQueryEvent(query=res)))
+
+    return res
 
 
-rewrite_flows_query_system_prompt = """
+rewrite_flows_query_system_prompt = f"""
 You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
 life cycle inventory database.
 
@@ -127,52 +154,22 @@ life cycle inventory database.
     excludes the specific process itself. Furthermore, the query must match the syntax explained in the
     schema field description:
 
-The `query` must be in the format 'What <is/are> the [input/output] [<aggregation>] <query> of the process?'.
-For `join_type` if there are multiple subqueries, you can use 'intersection' or 'union'. Think about
-if the user wants to know all the flows of all subqueries separately (join_type='union') or the users
-wants a single results where both subqueries are applied as filters (join_type='intersection').
+## Output format ##
+`queries`: {FlowQueries.model_fields["queries"].description}
+`join_type`: {FlowQueries.model_fields["join_type"].description}
 
-Examples:
-- "What are the total output emissions to air of the process?"
-- "What are the emissions of the process?"
-- "What are the output values for carbon dioxide, methane, and nitrous oxide of the process?"
+Per query:
+`justification`: {FlowsQuery.model_fields["justification"].description}
+`query`: {FlowsQuery.model_fields["query"].description}
 """.strip()
-
-
-flow_query_field_description = """
-The query must be in the format 'What <is/are> the [input/output] [<aggregation>] <query> of the process?'.
-
-Examples:
-- "What are the total output emissions to air of the process?"
-- "What are the emissions of the process?"
-- "What are the output values for carbon dioxide, methane, and nitrous oxide of the process?"
-""".strip()
-
-
-class FlowsQuery(BaseModel):
-    justification: str = Field(
-        description="Why this query is suitable for searching flows"
-    )
-    query: str = Field(description=flow_query_field_description)
-
-    @field_validator("query", mode="after")
-    @classmethod
-    def validate_query(cls, query: str):
-        if not query.endswith("the process?"):
-            raise ValueError("query must end with 'the process?'")
-
-        return query
-
-
-class FlowQueries(BaseModel):
-    queries: list[FlowsQuery] = Field(description="List of flow queries")
-    join_type: Literal["intersection", "union"] = Field(
-        "union", description="Join type for the queries"
-    )
 
 
 @task
-def rewrite_flows_query(user_question: str) -> FlowQueries:
+async def rewrite_flows_query(
+    user_question: str, writer: StreamWriter = noop_writer
+) -> FlowQueries:
+    writer(AgentEvent(event=RewritingFlowsQueriesEvent()))
+
     llm = get_ollama().with_structured_output(
         FlowQueries, method="json_schema", include_raw=True
     )
@@ -184,7 +181,7 @@ def rewrite_flows_query(user_question: str) -> FlowQueries:
     while tries < 3:
         resp = cast(
             dict,
-            chain.invoke(
+            await chain.ainvoke(
                 {
                     "system_prompt": rewrite_flows_query_system_prompt,
                     "history": history,
@@ -203,31 +200,39 @@ def rewrite_flows_query(user_question: str) -> FlowQueries:
                 )
             )
         else:
-            return cast(FlowQueries, resp["parsed"])
+            res = cast(FlowQueries, resp["parsed"])
+            writer(
+                AgentEvent(
+                    event=RewrittenFlowsQueriesEvent(rewritten_flows_queries=res)
+                )
+            )
+            return res
     else:
         raise RuntimeError("Failed to rewrite flows query after 3 attempts")
 
 
-select_process_system_prompt = """
+select_process_system_prompt = f"""
 You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
 life cycle inventory database.
 
+## Instructions ##
 Your task is to select the best fitting process from the list of candidates.
 You will receive a list of candidate processes and you must select the best fitting one.
+
+## Output format ##
+`justification`: {SelectedProcess.model_fields["justification"].description}
+`index`: {SelectedProcess.model_fields["index"].description}
 """.strip()
 
 
-class SelectedProcess(BaseModel):
-    index: int
-    justification: str = Field(
-        description="Why this process is suitable for the user question"
-    )
-
-
 @task
-def select_process(
-    candidates: list[ProcessData], user_question: str
+async def select_process(
+    candidates: list[ProcessData],
+    user_question: str,
+    writer: StreamWriter = noop_writer,
 ) -> SelectedProcess:
+    writer(AgentEvent(event=SelectingProcessEvent()))
+
     llm = get_ollama().with_structured_output(SelectedProcess)
     chain = base_prompt | llm
 
@@ -242,9 +247,9 @@ def select_process(
         "<question>{question}</question>\n<processes>\n{candidates}\n</processes>"
     )
 
-    return cast(
+    res = cast(
         SelectedProcess,
-        chain.invoke(
+        await chain.ainvoke(
             {
                 "system_prompt": select_process_system_prompt,
                 "human_input": human_template.format(
@@ -256,24 +261,30 @@ def select_process(
             }
         ),
     )
-
-
-class Output(TypedDict):
-    initial_question: str
-    rewritten_process_query: RewrittenProcessQuery
-    selected_process: SelectedProcess
-    selected_process_uuid: str
-    rewritten_flows_queries: FlowQueries
-    flows_indices: list[int]
-    aggregation: str
+    writer(
+        AgentEvent(
+            event=SelectedProcessEvent(
+                process=res,
+                process_uuid=candidates[
+                    res.index
+                ].processInformation.dataSetInformation.UUID,
+            )
+        )
+    )
+    return res
 
 
 @entrypoint(checkpointer=MemorySaver())
-def main(user_question: str) -> Output:
-    rewritten_process_query_fut = rewrite_process_query(user_question)
-    rewritten_flows_query_fut = rewrite_flows_query(user_question)
+async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
+    rewritten_process_query_fut = cast(
+        Awaitable[RewrittenProcessQuery], rewrite_process_query(user_question)
+    )
 
-    rewritten_process_query_resp = rewritten_process_query_fut.result()
+    rewritten_flows_query_fut = cast(
+        Awaitable[FlowQueries], rewrite_flows_query(user_question)
+    )
+
+    rewritten_process_query_resp = await rewritten_process_query_fut
     rewritten_process_query = rewritten_process_query_resp.query
 
     candidate_processes_docs = collections.processes.similarity_search(
@@ -282,17 +293,20 @@ def main(user_question: str) -> Output:
     candidate_processes = [
         ProcessData.from_uuid(doc.metadata["uuid"]) for doc in candidate_processes_docs
     ]
+    writer(
+        AgentEvent(event=ProcessCandidatesFetchedEvent(candidates=candidate_processes))
+    )
 
-    selected_process_resp = select_process(
-        candidate_processes, rewritten_process_query
-    ).result()
-
-    print(selected_process_resp)
+    selected_process_resp = cast(
+        SelectedProcess,
+        await select_process(candidate_processes, rewritten_process_query),
+    )
 
     selected_process = candidate_processes[selected_process_resp.index]
     selected_process_uuid = selected_process.processInformation.dataSetInformation.UUID
 
-    rewritten_flows_queries = rewritten_flows_query_fut.result()
+    rewritten_flows_queries = await rewritten_flows_query_fut
+
     model = load_tapas_model()
     tokenizer = load_tapas_tokenizer()
     flows_df = extract_process_flows(selected_process)
@@ -303,14 +317,21 @@ def main(user_question: str) -> Output:
         set.intersection if rewritten_flows_queries.join_type == "and" else set.union
     )
 
+    tasks = []
     for query in rewritten_flows_queries.queries:
-        flow_indices, aggregation = retrieve_rows(
-            flows_df,
-            query.query,
-            model=model,
-            tokenizer=tokenizer,
-            threshold=0.75,
+        tasks.append(
+            asyncio.to_thread(
+                lambda: retrieve_rows(
+                    flows_df,
+                    query.query,
+                    model=model,
+                    tokenizer=tokenizer,
+                    threshold=0.75,
+                )
+            )
         )
+
+    for flow_indices, aggregation in await asyncio.gather(*tasks):
         aggregations[aggregation] += 1
 
         if all_indices is None:
@@ -318,14 +339,11 @@ def main(user_question: str) -> Output:
         else:
             all_indices = set_operator(all_indices, set(flow_indices))
 
-        # sub_dfs.append(flows_df.iloc[flow_indices])
-
     assert all_indices is not None
     flow_indices = sorted(all_indices)
     aggregation = aggregations.most_common(1)[0][0]
-    # filtered_df = flows_df.iloc[flow_indices].copy().reset_index(drop=True)
 
-    return {
+    res: AgentOutput = {
         "initial_question": user_question,
         "rewritten_process_query": rewritten_process_query_resp,
         "selected_process": selected_process_resp,
@@ -334,3 +352,6 @@ def main(user_question: str) -> Output:
         "flows_indices": flow_indices,
         "aggregation": aggregation,
     }
+
+    writer(AgentEvent(event=AgentFinishedEvent(type="agent_finished", result=res)))
+    return res
