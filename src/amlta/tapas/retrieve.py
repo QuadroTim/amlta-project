@@ -17,12 +17,19 @@ def retrieve_rows(
     df: pd.DataFrame,
     query: str,
     *,
+    shuffle_rows=True,
     model: TapasForQuestionAnswering,
     tokenizer: TapasTokenizer,
     chunk_size: int = 15,
     threshold=0.15,
 ):
-    table = transform_flows_for_tapas(df)
+    table = (
+        transform_flows_for_tapas(df)
+        .reset_index(drop=False)
+        .rename(columns={"index": "original_index"})
+    )
+    if shuffle_rows:
+        table = table.sample(frac=1, random_state=42)
 
     row_indices = []
     aggregation_candidates = collections.Counter()
@@ -40,7 +47,7 @@ def retrieve_rows(
     for (start, stop), batch in batch_gen:
         batch = batch.reset_index(drop=True)
         inputs = tokenizer(
-            table=batch,
+            table=batch.drop(columns=["original_index"]),
             queries=query,
             padding="max_length",
             return_tensors="pt",
@@ -64,13 +71,11 @@ def retrieve_rows(
         aggregation_candidates[id2aggregation[predicted_aggregation_index]] += 1
 
         row_indices += [
-            start + row_index
+            int(batch.iloc[row_index]["original_index"])
             for row_index, _ in predicted_answer_coordinates
             if row_index < len(batch)
         ]
 
     aggregation, _ = aggregation_candidates.most_common(1)[0]
-    # filtered_df = df.iloc[row_indices]
-    # flows = [row["flow_uuid"] for _, row in filtered_df.iterrows()]
 
     return row_indices, aggregation

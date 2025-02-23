@@ -39,7 +39,7 @@ def load_tapas_tokenizer() -> TapasTokenizer:
 
 @st.cache_resource
 def load_tapas_model() -> TapasForQuestionAnswering:
-    return _load_tapas_model().model
+    return _load_tapas_model()
 
 
 base_prompt = ChatPromptTemplate(
