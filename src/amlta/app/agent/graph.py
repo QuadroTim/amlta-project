@@ -1,28 +1,39 @@
 import asyncio
 import json
+import re
+import textwrap
 from collections import Counter
 from collections.abc import Awaitable
 from typing import cast
 
+import pandas as pd
 import streamlit as st
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import AIMessage, BaseMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.func import entrypoint, task
 from langgraph.types import StreamWriter
 from transformers import (
     TapasForQuestionAnswering,
-    TapasTokenizer,
 )
 
 from amlta.app.agent.core import (
     AgentEvent,
     AgentFinishedEvent,
     AgentOutput,
+    AnalyzedFlowsEvent,
+    AnalyzingFlowsEvent,
+    FetchedFlowsEvent,
+    FetchingFlowsEvent,
+    FilteredFlows,
     FlowQueries,
     FlowsQuery,
+    FlowValidation,
+    PandasCodeOutput,
     ProcessCandidatesFetchedEvent,
+    ProcessFlowAnalysisResult,
+    RemoveFlowAction,
     RewritingFlowsQueriesEvent,
     RewritingProcessQueryEvent,
     RewrittenFlowsQueriesEvent,
@@ -35,15 +46,22 @@ from amlta.app.agent.core import (
 )
 from amlta.app.llm import get_ollama
 from amlta.formatting.data import create_process_section
+from amlta.formatting.markdown import format_as_markdown
 from amlta.probas.flows import extract_process_flows
 from amlta.probas.processes import ProcessData
+from amlta.tapas.model import (
+    CustomTapasTokenizer,
+)
 from amlta.tapas.model import (
     load_tapas_model as _load_tapas_model,
 )
 from amlta.tapas.model import (
     load_tapas_tokenizer as _load_tapas_tokenizer,
 )
-from amlta.tapas.retrieve import retrieve_rows
+from amlta.tapas.retrieve import (
+    generate_tapas_chunks,
+    retrieve_rows_from_chunk,
+)
 
 
 def inspect_prompt(input: dict):
@@ -52,7 +70,7 @@ def inspect_prompt(input: dict):
 
 
 @st.cache_resource
-def load_tapas_tokenizer() -> TapasTokenizer:
+def load_tapas_tokenizer() -> CustomTapasTokenizer:
     return _load_tapas_tokenizer()
 
 
@@ -112,21 +130,24 @@ async def rewrite_process_query(
     # def retrieve(input: dict):
     #     return retriever.get_relevant_documents(input["human_input"])
 
-    def human_template(input: dict):
-        return {
-            **input,
-            "human_input": "<glossary>\n{context}\n</glossary>\n<question>{question}</question>".format(
-                context="\n\n".join(doc.page_content for doc in input["context"]),
-                question=input["human_input"],
-            ),
-        }
+    # def human_template(input: dict):
+    #     return {
+    #         **input,
+    #         # "human_input": "<glossary>\n{context}\n</glossary>\n<question>{question}</question>".format(
+    #         #     context="\n\n".join(doc.page_content for doc in input["context"]),
+    #         #     question=input["human_input"],
+    #         # ),
+    #         # "human_input": "<glossary>\n{context}\n</glossary>\n<question>{question}</question>".format(
+    #         #     context="\n\n".join(doc.page_content for doc in input["context"]),
+    #         #     question=input["human_input"],
+    #         # ),
+    #     }
 
     chain = (
         {
             "context": retriever,
             "human_input": RunnablePassthrough(),
         }
-        | RunnableLambda(human_template)
         | base_prompt.partial(system_prompt=rewrite_process_query_system_prompt)
         # | inspect_prompt
         | llm
@@ -152,7 +173,7 @@ life cycle inventory database.
     queries, one for each category.
 3. Given the (decomposed) question, formulate a neutral natural question query -- that is, a query that
     excludes the specific process itself. Furthermore, the query must match the syntax explained in the
-    schema field description:
+    schema field description.
 
 ## Output format ##
 `queries`: {FlowQueries.model_fields["queries"].description}
@@ -238,6 +259,8 @@ async def select_process(
 
     def _format_candidate(index: int, process: ProcessData) -> str:
         data = create_process_section(process, include_flows=False)
+        keep_keys = ["Name", "Year", "Geography", "Class", "Main Output"]
+        data = {k: v for k, v in data.items() if k in keep_keys}
 
         return "<candidate index={index}>\n{data}\n</candidate>".format(
             index=index, data=json.dumps(data, indent=2)
@@ -274,6 +297,486 @@ async def select_process(
     return res
 
 
+filter_flows_system_prompt = f"""
+You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
+life cycle inventory database.
+
+## Instructions ##
+Given a list of flows, your task is verify if the flows match the user question.
+
+## Output format ##
+`justification`: {FlowValidation.model_fields["justification"].description}
+`removals`: {FlowValidation.model_fields["removals"].description}
+
+Per removal:
+`justification`: {RemoveFlowAction.model_fields["justification"].description}
+`index`: {RemoveFlowAction.model_fields["index"].description}
+"""
+
+
+def _format_flow(index: int, flow: dict) -> str:
+    return "<flow index={index}>\n{data}\n</flow>".format(
+        index=index, data=json.dumps(flow, indent=2)
+    )
+
+
+@task
+async def fetch_flows_chunk(
+    flows_df: pd.DataFrame,
+    threshold: float,
+    query: str,
+    writer: StreamWriter = noop_writer,
+) -> FilteredFlows:
+    model = load_tapas_model()
+    tokenizer = load_tapas_tokenizer()
+
+    flow_indices, aggregation = await asyncio.to_thread(
+        retrieve_rows_from_chunk,
+        flows_df,
+        query=query,
+        model=model,
+        tokenizer=tokenizer,
+        threshold=threshold,
+    )
+
+    flows = flows_df.loc[flows_df["original_index"].isin(flow_indices)]
+    if flows.empty:
+        return FilteredFlows(flow_indices=[], aggregation=aggregation)
+
+    llm = get_ollama().with_structured_output(FlowValidation)
+    chain = base_prompt | llm
+    human_template = "<question>{question}</question>\n<flows>\n{flows}\n</flows>"
+    formatted_flows = "\n\n".join(
+        _format_flow(idx, f) for idx, f in enumerate(flows.to_dict(orient="records"))
+    )
+
+    res = cast(
+        FlowValidation,
+        await chain.ainvoke(
+            {
+                "system_prompt": filter_flows_system_prompt,
+                "human_input": human_template.format(
+                    question=query, flows=formatted_flows
+                ),
+            }
+        ),
+    )
+    removals_indices = [rem.index for rem in res.removals]
+    flows = flows.drop(
+        flows.iloc[removals_indices].index.tolist(), axis=0, inplace=False
+    )
+
+    return FilteredFlows(
+        flow_indices=flows["original_index"].tolist(), aggregation=aggregation
+    )
+
+
+@task
+async def fetch_flows(
+    flows_df: pd.DataFrame,
+    threshold: float,
+    query: FlowsQuery,
+    writer: StreamWriter = noop_writer,
+) -> FilteredFlows:
+    futures = []
+
+    for chunk in generate_tapas_chunks(flows_df):
+        futures.append(
+            fetch_flows_chunk(
+                chunk,
+                threshold=threshold,
+                query=query.query,
+            )
+        )
+
+    results = cast(list[FilteredFlows], await asyncio.gather(*futures))
+
+    return FilteredFlows(
+        flow_indices=[flow for res in results for flow in res.flow_indices],
+        aggregation=Counter(res.aggregation for res in results).most_common(1)[0][0],
+    )
+
+
+_code_fn_template = """
+def analyze_results(dataframes) -> pd.DataFrame:
+{code}
+"""
+
+
+_code_template = """
+{fn}
+
+try:
+    result = analyze_results(dataframes)
+except Exception as e:
+    exception = e
+    result = None
+else:
+    exception = None
+"""
+
+
+def _fix_code(code: str):
+    code = code.lstrip("\n\r")
+    if not code.startswith("    ") and not "def analyze_results" in code:
+        code = textwrap.indent(code, "    ")
+    elif "def analyze_results" in code:
+        code = re.sub(r"def analyze_results.*?\n", "", code, count=1)
+
+    return _code_fn_template.format(code=code)
+
+
+def _format_code(code: str):
+    return _code_template.format(fn=_fix_code(code))
+
+
+def _interpret_python(locals: dict[str, object], code: str):
+    print("RUNNING")
+    print(code)
+
+    env = {"__builtins__": __builtins__, **locals}
+
+    exec(code, env)
+
+    result = env["result"]
+    exception = env["exception"]
+
+    if isinstance(result, pd.Series):
+        result = result.to_frame().T
+
+    return result.to_dict(orient="records"), exception
+
+
+analyze_results_system_prompt = rf"""
+You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
+life cycle inventory database.
+
+## Instructions ##
+Given one or more dataframes containing flows (i.e., inputs/outputs) of a process, your task is to
+generate python code that analyzes the dataframes and returns a dataframe answering the user
+question.
+
+## Output format ##
+`justification`: {PandasCodeOutput.model_fields["justification"].description}
+`code`: {PandasCodeOutput.model_fields["code"].description}
+
+## Example ##
+```python
+import pandas as pd
+
+process_name = r"Metall\Fe-roh-DE-2005"
+
+dataframes = [
+    # df 0 contains data answering 'What are the output amounts of lead to water of the process?'
+    df0,
+    # df 1 contains data answering 'What are the output amounts of mercury to water of the process?'
+    df1
+]
+
+# question: Does iron production emit more mercury to water or lead to water?
+def analyze_results(dataframes) -> pd.DataFrame:
+    # your code
+    df0 = dataframes[0]
+    df1 = dataframes[1]
+    return pd.concat([df0, df1]).groupby(["name", "unit"]).sum().sort_values("amount", ascending=False)
+```
+
+For reference:
+```python
+df0.head(1)
+```
+```pycon
+  direction            type class name amount unit unit_property_name
+0     input Elementary Flow   ... lead   0.01   kg               Mass
+```
+
+Your response:
+{{ "code":  "df0 = ...", "justification": "The code compares the total output amounts of lead and mercury to water by combining the dataframes and ordering the result." }}
+"""
+
+analyze_results_human_template = """
+```python
+import pandas as pd
+
+process_name = r"{process_name}"
+
+dataframes = [
+{dataframes}
+]
+
+# question: {question}
+def analyze_results(dataframes):
+    # your code
+
+```
+
+{df_heads}
+""".strip()
+
+
+df_head_template = """
+```python
+df{index}.head(5)
+```
+```pycon
+{df_head}
+```
+"""
+
+# direction       type  ...                     name       amount unit  unit_property_name
+# 0   input Waste Flow  ...  secondary raw materials 3.960000e+00   MJ Net calorific value
+
+
+cols_to_show = [
+    "direction",
+    "type",
+    "class",
+    "name",
+    "amount",
+    "unit",
+    "unit_property_name",
+]
+
+
+def transform_flows_for_analysis(flows_df: pd.DataFrame):
+    df = flows_df.rename(
+        columns={
+            "exchange_direction": "direction",
+            "exchange_type_of_flow": "type",
+            "exchange_classification_hierarchy": "class",
+            "flow_description": "name",
+            "exchange_resulting_amount": "amount",
+            "flow_property_unit": "unit",
+            "flow_property_name": "unit_property_name",
+        }
+    ).assign(
+        direction=lambda df: df["direction"].str.lower(),
+    )
+    other_cols = df.columns.difference(cols_to_show).to_list()
+    return df[cols_to_show + other_cols]
+
+
+@task
+async def analyze_results(
+    original_question: str,
+    rewritten_process_query: RewrittenProcessQuery,
+    selected_process: SelectedProcess,
+    selected_process_uuid: str,
+    rewritten_flows_queries: FlowQueries,
+    flows_indices: list[int],
+    aggregation: str,
+    tries_left: int = 3,
+    history: list[BaseMessage] | None = None,
+    writer: StreamWriter = noop_writer,
+) -> ProcessFlowAnalysisResult:
+    process = ProcessData.from_uuid(selected_process_uuid)
+    process_name = process.processInformation.dataSetInformation.name.baseName.get()
+
+    flows_df = (
+        extract_process_flows(process)
+        .reset_index()
+        .rename(columns={"index": "original_index"})
+    )
+    flows_df = flows_df.iloc[flows_indices].reset_index(drop=True)
+    flows_df = transform_flows_for_analysis(flows_df)
+
+    # only one dataframe for now
+    assert len(rewritten_flows_queries.queries) == 1
+    dfs = [(query.query, flows_df) for query in rewritten_flows_queries.queries]
+    formatted_df_list = "\n".join(
+        f"    # {flow_query}\n    df{index},"
+        for index, (flow_query, _) in enumerate(dfs)
+    )
+
+    with pd.option_context("display.max_columns", None):
+        df_heads = "\n\n".join(
+            df_head_template.format(index=i, df_head=repr(df[cols_to_show].head(5)))
+            for i, (query, df) in enumerate(dfs)
+        )
+
+    human_input = analyze_results_human_template.format(
+        process_name=process_name,
+        dataframes=formatted_df_list,
+        question=original_question,
+        df_heads=df_heads,
+    )
+
+    llm = get_ollama().with_structured_output(PandasCodeOutput, method="json_schema")
+    chain = base_prompt | llm
+
+    res = cast(
+        PandasCodeOutput,
+        await chain.ainvoke(
+            {
+                "system_prompt": analyze_results_system_prompt,
+                "history": history or [],
+                "human_input": human_input,
+            }
+        ),
+    )
+
+    fn_locals = {
+        "pd": pd,
+        "dataframes": [df for _, df in dfs],
+        "process_name": process_name,
+        **{f"df{i}": df for i, (_, df) in enumerate(dfs)},
+    }
+
+    result, exception = await asyncio.to_thread(
+        _interpret_python, locals=fn_locals, code=_format_code(res.code)
+    )
+
+    res.code = _fix_code(res.code)
+
+    if exception is not None and tries_left > 0:
+        tries_left -= 1
+        feedback = f"Error: {exception}\nPlease fix your mistakes."
+        history = [
+            AIMessage(content=res.model_dump_json()),
+            SystemMessage(content=feedback),
+        ]
+        return cast(
+            ProcessFlowAnalysisResult,
+            await analyze_results(
+                original_question=original_question,
+                rewritten_process_query=rewritten_process_query,
+                selected_process=selected_process,
+                selected_process_uuid=selected_process_uuid,
+                rewritten_flows_queries=rewritten_flows_queries,
+                flows_indices=flows_indices,
+                aggregation=aggregation,
+                tries_left=tries_left,
+                history=history,
+            ),
+        )
+
+    return ProcessFlowAnalysisResult(
+        code=res,
+        result=result,
+        exception=exception,
+    )
+
+
+final_answer_system_prompt = f"""
+You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
+life cycle inventory database.
+
+## Instructions ##
+Your task is to answer the user question based on the provided context and generated intermediate
+results.
+
+## Output format ##
+Respond in text format, addressing the user's question directly. Convey if the question could be
+answered appropriately or not. Include any possible limitations or uncertainties in your answer.
+
+Use well formatted markdown as well as professional grammar and spelling.
+""".strip()
+
+
+final_answer_human_template = """
+{question}
+
+<context>
+<!-- potentially useful glossary terms -->
+{glossary}
+
+<!-- the process that was selected -->
+{process_context}
+
+<!-- the flows that were queried -->
+{flows_context}
+
+<!-- the pandas analysis result of the flows -->
+{analysis_result}
+</context>
+
+<question>
+{question}
+</question>
+""".strip()
+
+
+@task
+async def get_final_answer(
+    original_question: str,
+    process: ProcessData,
+    flows_queries: FlowQueries,
+    flows_results: list[dict],
+    analysis_result: ProcessFlowAnalysisResult,
+    writer: StreamWriter = noop_writer,
+):
+    llm = get_ollama()
+    chain = base_prompt | llm
+
+    retriever = collections.glossary.as_retriever(
+        search_type="mmr", search_kwargs={"k": 5, "fetch_k": 15}
+    )
+
+    process_data = create_process_section(process, include_flows=False)
+    process_markdown = format_as_markdown(process_data)
+    process_context = "<process>{}</process>".format(
+        textwrap.indent(process_markdown, "    ")
+    )
+
+    docs = retriever.get_relevant_documents(original_question + " " + process_markdown)
+    glossary_terms = textwrap.indent(
+        "\n\n".join(f"<term>{doc.page_content}</term>" for doc in docs),
+        "    ",
+    )
+    glossary_context = "<glossary>\n{terms}\n</glossary>".format(
+        terms=glossary_terms,
+    )
+
+    flows_context_queries = "\n".join(
+        f"<flow-query>{query.query}</flow-query>" for query in flows_queries.queries
+    )
+
+    flows_context_results = "\n".join(
+        f"<flow-result>{json.dumps(flow, indent=2)}</flow-result>"
+        for flow in flows_results[:5]
+    ) + (
+        "\n<!-- ... {} more flows omitted -->".format(len(flows_results) - 5)
+        if len(flows_results) > 5
+        else ""
+    )
+
+    flows_context = (
+        "<intermediary-results>\n{queries}\n{results}\n</intermediary-results>".format(
+            queries=textwrap.indent(flows_context_queries, "    "),
+            results=textwrap.indent(flows_context_results, "    "),
+        )
+    )
+
+    analysis_result_dump = "<result>{}</result>".format(
+        textwrap.indent(
+            json.dumps(analysis_result.result, indent=2),
+            "    ",
+        )
+    )
+    analysis_result_context = "<analysis-result>{}</analysis-result>".format(
+        textwrap.indent(analysis_result_dump, "    ")
+    )
+    human_input = final_answer_human_template.format(
+        question=original_question,
+        glossary=glossary_context,
+        process_context=process_context,
+        flows_context=flows_context,
+        analysis_result=analysis_result_context,
+    )
+
+    return cast(
+        str,
+        (
+            await chain.ainvoke(
+                {
+                    "system_prompt": final_answer_system_prompt,
+                    "human_input": human_input,
+                }
+            )
+        ).content,
+    )
+
+
 @entrypoint(checkpointer=MemorySaver())
 async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
     rewritten_process_query_fut = cast(
@@ -307,41 +810,78 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
 
     rewritten_flows_queries = await rewritten_flows_query_fut
 
-    model = load_tapas_model()
-    tokenizer = load_tapas_tokenizer()
     flows_df = extract_process_flows(selected_process)
 
     all_indices = None
     aggregations = Counter()
     set_operator = (
-        set.intersection if rewritten_flows_queries.join_type == "and" else set.union
+        set.intersection
+        if rewritten_flows_queries.join_type == "intersection"
+        else set.union
     )
 
-    tasks = []
+    writer(AgentEvent(event=FetchingFlowsEvent()))
+
+    futures = []
     for query in rewritten_flows_queries.queries:
-        tasks.append(
-            asyncio.to_thread(
-                lambda: retrieve_rows(
-                    flows_df,
-                    query.query,
-                    model=model,
-                    tokenizer=tokenizer,
-                    threshold=0.75,
-                )
+        futures.append(
+            fetch_flows(
+                flows_df,
+                threshold=0.05,
+                query=query,
             )
         )
 
-    for flow_indices, aggregation in await asyncio.gather(*tasks):
-        aggregations[aggregation] += 1
+    for filtered_flows in await asyncio.gather(*futures):
+        filtered_flows = cast(FilteredFlows, filtered_flows)
+
+        aggregations[filtered_flows.aggregation] += 1
 
         if all_indices is None:
-            all_indices = set(flow_indices)
+            all_indices = set(filtered_flows.flow_indices)
         else:
-            all_indices = set_operator(all_indices, set(flow_indices))
+            all_indices = set_operator(all_indices, set(filtered_flows.flow_indices))
 
     assert all_indices is not None
     flow_indices = sorted(all_indices)
     aggregation = aggregations.most_common(1)[0][0]
+
+    flows_df = flows_df.reset_index().rename(columns={"index": "original_index"})
+    flows_data = transform_flows_for_analysis(
+        flows_df.loc[flows_df["original_index"].isin(flow_indices)]
+    ).to_dict(orient="records")
+
+    writer(
+        AgentEvent(event=FetchedFlowsEvent(flows=flows_data, aggregation=aggregation))
+    )
+
+    writer(AgentEvent(event=AnalyzingFlowsEvent()))
+
+    analysis_result = cast(
+        ProcessFlowAnalysisResult,
+        await analyze_results(
+            original_question=user_question,
+            rewritten_process_query=rewritten_process_query_resp,
+            selected_process=selected_process_resp,
+            selected_process_uuid=selected_process_uuid,
+            rewritten_flows_queries=rewritten_flows_queries,
+            flows_indices=flow_indices,
+            aggregation=aggregation,
+        ),
+    )
+
+    writer(AgentEvent(event=AnalyzedFlowsEvent(result=analysis_result)))
+
+    answer = cast(
+        str,
+        await get_final_answer(
+            original_question=user_question,
+            process=selected_process,
+            flows_queries=rewritten_flows_queries,
+            flows_results=flows_data,
+            analysis_result=analysis_result,
+        ),
+    )
 
     res: AgentOutput = {
         "initial_question": user_question,
@@ -351,7 +891,10 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
         "rewritten_flows_queries": rewritten_flows_queries,
         "flows_indices": flow_indices,
         "aggregation": aggregation,
+        "analysis_result": analysis_result,
+        "final_answer": answer,
     }
 
     writer(AgentEvent(event=AgentFinishedEvent(type="agent_finished", result=res)))
+
     return res

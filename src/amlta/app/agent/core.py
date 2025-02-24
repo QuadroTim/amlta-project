@@ -1,4 +1,4 @@
-from typing import ClassVar, Literal, TypedDict
+from typing import Any, ClassVar, Literal, TypedDict
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -19,6 +19,11 @@ class RewrittenProcessQuery(BaseModel):
 
 flow_query_field_description = """
 The query must be in the format 'What <is/are> the [input/output] [<aggregation>] <query> of the process?'.
+
+The only aggregations/operators allowed to be conveyed in the query are total, average, sum, or count.
+If the aggregation is not specified, leave it out.
+If the query is about a different aggregation or operator (lowest/biggest/...), treat it as no
+aggregation and leave it out as well.
 
 Examples:
 - "What are the total output emissions to air of the process?"
@@ -63,6 +68,51 @@ class SelectedProcess(BaseModel):
     index: int = Field(description="Index of the selected process")
 
 
+class RemoveFlowAction(BaseModel):
+    justification: str = Field(
+        description="Why this flow should be removed from the result"
+    )
+    index: int = Field(description="Index of the flow to be removed")
+
+    @field_validator("index", mode="before")
+    @classmethod
+    def validate_index(cls, index: Any):
+        if index is None:
+            return -1
+
+        return int(index)
+
+
+class FlowValidation(BaseModel):
+    justification: str = Field(
+        description="Why the flows should or should not be removed from the result"
+    )
+    removals: list[RemoveFlowAction] = Field(
+        description="List of flows to be removed from the result. If none need to be removed, return an empty list."
+    )
+
+    @field_validator("removals", mode="before")
+    @classmethod
+    def validate_removals(cls, removals: Any):
+        return [removal for removal in removals if removal["index"] != -1]
+
+
+class FilteredFlows(BaseModel):
+    flow_indices: list[int]
+    aggregation: str
+
+
+class PandasCodeOutput(BaseModel):
+    justification: str = Field(description="Why this code is answers the user question")
+    code: str = Field(description="The body of the `analyze_results` function")
+
+
+class ProcessFlowAnalysisResult(BaseModel):
+    code: PandasCodeOutput
+    result: dict | list[dict] | None
+    exception: str | None
+
+
 class AgentOutput(TypedDict):
     initial_question: str
     rewritten_process_query: RewrittenProcessQuery
@@ -71,11 +121,18 @@ class AgentOutput(TypedDict):
     rewritten_flows_queries: FlowQueries
     flows_indices: list[int]
     aggregation: str
+    analysis_result: ProcessFlowAnalysisResult
+    final_answer: str
 
 
 # Agent Events
 
-EventCategory = Literal["process_selection", "flows_selection", "agent_finished"]
+EventCategory = Literal[
+    "process_selection",
+    "flows_selection",
+    "flows_analysis",
+    "agent_finished",
+]
 
 
 class RewritingProcessQueryEvent(BaseModel):
@@ -118,6 +175,29 @@ class RewrittenFlowsQueriesEvent(BaseModel):
     rewritten_flows_queries: FlowQueries
 
 
+class FetchingFlowsEvent(BaseModel):
+    category: ClassVar[EventCategory] = "flows_selection"
+    type: Literal["fetching_flows"] = "fetching_flows"
+
+
+class FetchedFlowsEvent(BaseModel):
+    category: ClassVar[EventCategory] = "flows_selection"
+    type: Literal["fetched_flows"] = "fetched_flows"
+    flows: list[dict]
+    aggregation: str
+
+
+class AnalyzingFlowsEvent(BaseModel):
+    category: ClassVar[EventCategory] = "flows_analysis"
+    type: Literal["analyzing_flows"] = "analyzing_flows"
+
+
+class AnalyzedFlowsEvent(BaseModel):
+    category: ClassVar[EventCategory] = "flows_analysis"
+    type: Literal["analyzed_flows"] = "analyzed_flows"
+    result: ProcessFlowAnalysisResult
+
+
 class AgentFinishedEvent(BaseModel):
     category: ClassVar[EventCategory] = "agent_finished"
     type: Literal["agent_finished"] = "agent_finished"
@@ -133,9 +213,9 @@ class AgentEvent(BaseModel):
         | SelectedProcessEvent
         | RewritingFlowsQueriesEvent
         | RewrittenFlowsQueriesEvent
+        | FetchingFlowsEvent
+        | FetchedFlowsEvent
+        | AnalyzingFlowsEvent
+        | AnalyzedFlowsEvent
         | AgentFinishedEvent
     ) = Field(discriminator="type")
-
-    @classmethod
-    def make(cls, data: dict) -> "AgentEvent":
-        return cls(event=data)  # type: ignore
