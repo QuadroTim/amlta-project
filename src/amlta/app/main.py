@@ -53,7 +53,7 @@ def handle_event(
     flows_selection_container: Callable[[], StatusContainer],
     flows_analysis_container: Callable[[], StatusContainer],
 ):
-    from amlta.app.agent.graph import cols_to_show
+    from amlta.app.agent.graph import cols_to_show, transform_flows_for_analysis
 
     ev = event.event
 
@@ -109,7 +109,10 @@ def handle_event(
 
         case FetchedFlowsEvent(flows=flows):
             flows_selection_container().update(label="Fetched flows", state="complete")
-            flows_selection_container().write(pd.DataFrame(flows)[cols_to_show])
+            for flow in flows.flows:
+                df = pd.DataFrame(flow.filtered)
+                df = transform_flows_for_analysis(df)
+                flows_selection_container().write(df[cols_to_show])
 
         case AnalyzingFlowsEvent():
             flows_analysis_container().update(label="Analyzing flows...")
