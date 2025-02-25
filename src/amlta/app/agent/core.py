@@ -102,6 +102,16 @@ class FilteredFlows(BaseModel):
     aggregation: str
 
 
+class FinalFlows(BaseModel):
+    query: FlowsQuery
+    filtered: list[dict]
+
+
+class FinalFlowsList(BaseModel):
+    join_type: Literal["intersection", "union"]
+    flows: list[FinalFlows]
+
+
 class PandasCodeOutput(BaseModel):
     justification: str = Field(description="Why this code is answers the user question")
     code: str = Field(description="The body of the `analyze_results` function")
@@ -119,8 +129,7 @@ class AgentOutput(TypedDict):
     selected_process: SelectedProcess
     selected_process_uuid: str
     rewritten_flows_queries: FlowQueries
-    flows_indices: list[int]
-    aggregation: str
+    final_flows: FinalFlowsList
     analysis_result: ProcessFlowAnalysisResult
     final_answer: str
 
@@ -183,8 +192,7 @@ class FetchingFlowsEvent(BaseModel):
 class FetchedFlowsEvent(BaseModel):
     category: ClassVar[EventCategory] = "flows_selection"
     type: Literal["fetched_flows"] = "fetched_flows"
-    flows: list[dict]
-    aggregation: str
+    flows: FinalFlowsList
 
 
 class AnalyzingFlowsEvent(BaseModel):
