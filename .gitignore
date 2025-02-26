@@ -17,6 +17,7 @@ data/processes.*
 
 data/generated/*
 !data/generated/.gitkeep
+!data/generated/tapas-eval-questions.jsonl
 
 data/qdrant*/*
 !data/qdrant*/meta.json
