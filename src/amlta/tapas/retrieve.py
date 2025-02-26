@@ -52,7 +52,7 @@ def retrieve_rows_from_chunk(
     model: TapasForQuestionAnswering,
     tokenizer: CustomTapasTokenizer,
     threshold: float = 0.15,
-    return_probabilities: Literal[True],
+    return_probabilities: Literal[True] = True,
 ) -> tuple[list[int], str, list[float]]: ...
 @overload
 def retrieve_rows_from_chunk(
@@ -62,7 +62,7 @@ def retrieve_rows_from_chunk(
     model: TapasForQuestionAnswering,
     tokenizer: CustomTapasTokenizer,
     threshold: float = 0.15,
-    return_probabilities: Literal[False],
+    return_probabilities: Literal[False] = False,
 ) -> tuple[list[int], str]: ...
 def retrieve_rows_from_chunk(
     chunk: pd.DataFrame,
