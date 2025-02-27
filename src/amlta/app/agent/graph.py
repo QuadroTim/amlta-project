@@ -1,5 +1,6 @@
 import asyncio
 import json
+import random
 import re
 import textwrap
 from collections import Counter
@@ -50,6 +51,7 @@ from amlta.formatting.data import create_process_section
 from amlta.formatting.markdown import format_as_markdown
 from amlta.probas.flows import extract_process_flows
 from amlta.probas.processes import ProcessData
+from amlta.question_generation.process import load_batches
 from amlta.tapas.model import (
     CustomTapasTokenizer,
 )
@@ -160,6 +162,16 @@ async def rewrite_process_query(
     return res
 
 
+_questions = load_batches()
+_q1 = random.choice(_questions)
+_q2 = random.choice(_questions)
+
+ex_q1 = _q1["question_replaced_basic"]
+ex_r1 = _q1["question"].replace("<", "").replace(">", "")
+ex_q2 = _q2["question_replaced_specific"]
+ex_r2 = _q2["question"].replace("<", "").replace(">", "")
+
+
 rewrite_flows_query_system_prompt = f"""
 You are assisting a life cycle inventory (LCI) expert in browsing and querying the PROBAS
 life cycle inventory database.
@@ -183,6 +195,13 @@ life cycle inventory database.
 Per query:
 `justification`: {FlowsQuery.model_fields["justification"].description}
 `query`: {FlowsQuery.model_fields["query"].description}
+
+## Example ##
+User question: "{ex_q1}"
+Rewritten query: "{ex_r1}"
+
+User question: "{ex_q2}"
+Rewritten query: "{ex_r2}"
 """.strip()
 
 
