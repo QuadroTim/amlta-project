@@ -1,4 +1,11 @@
-from typing import Any, ClassVar, Literal, TypedDict
+import sys
+from typing import Any, ClassVar, Literal
+
+if "3.12" > sys.version:
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
+
 
 from pydantic import BaseModel, Field, field_validator
 
