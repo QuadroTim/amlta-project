@@ -1,11 +1,10 @@
 from collections import UserList
+from collections.abc import Iterator
 from os import PathLike
 from typing import (
     Any,
     ClassVar,
     Generic,
-    Iterator,
-    List,
     Literal,
     Self,
     TypeVar,
@@ -41,7 +40,7 @@ class LocalizedTextList(UserList[LocalizedText]):
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         return core_schema.no_info_after_validator_function(
-            cls, handler(List[LocalizedText])
+            cls, handler(list[LocalizedText])
         )
 
     def get(self, preferred_lang: str = "en") -> str | None:
@@ -58,7 +57,7 @@ class AccessRestriction(BaseModel):
 
 
 class Other(BaseModel):
-    anies: List[str]
+    anies: list[str]
 
 
 ExternalDataSetTypeT = Literal[
@@ -114,13 +113,13 @@ class ClassificationItem(BaseModel):
 
 
 class Classification(BaseModel):
-    class_: List[ClassificationItem] = Field(..., alias="class")
+    class_: list[ClassificationItem] = Field(..., alias="class")
     name: str
     classes: str
 
 
 class ClassificationInformation(BaseModel):
-    classification: List[Classification] | None = None
+    classification: list[Classification] | None = None
 
 
 class DataSetInformation(BaseModel):
@@ -148,7 +147,7 @@ class DataSetInformation(BaseModel):
     Please also check the more specific fields e.g. on "Intended application", "Advice on data set use" and the fields in the "Modelling and validation" section to avoid
     overlapping entries.)
     """
-    referenceToExternalDocumentation: List[SourceDataSet] | None = None
+    referenceToExternalDocumentation: list[SourceDataSet] | None = None
     """
     "Source data set(s)" of detailed LCA study on the process or product represented by this data set, as well as documents / files with overarching
     documentative information on technology, geographical and / or time aspects etc. (e.g. basic engineering studies, process simulation results, patents, plant
@@ -158,7 +157,7 @@ class DataSetInformation(BaseModel):
 
 
 class QuantitativeReference(BaseModel):
-    referenceToReferenceFlow: List[int]
+    referenceToReferenceFlow: list[int]
     """
     One or more of the Inputs or Outputs in case "Type of quantitative reference" is of type "Reference flow(s)". (Data set internal
     reference.)
@@ -278,7 +277,7 @@ class LCIMethodAndAllocationType(BaseModel):
 
 
 class DataSourcesTreatmentAndRepresentativeness(BaseModel):
-    referenceToDataSource: List[SourceDataSet]
+    referenceToDataSource: list[SourceDataSet]
     """
     "Source data set"(s) of the source(s) used for deriving/compiling the inventory of this data set e.g. questionnaires, monographies, plant operation
     protocols, etc. For LCI results and Partly terminated systems the sources for relevant background system data are to be given, too. For parameterised data sets the
@@ -290,7 +289,7 @@ class DataSourcesTreatmentAndRepresentativeness(BaseModel):
 
 
 class Review(BaseModel):
-    referenceToNameOfReviewerAndInstitution: List[ContactDataSet] | None = None
+    referenceToNameOfReviewerAndInstitution: list[ContactDataSet] | None = None
     type: str
     """
     Type of review that has been performed regarding independency and type of review process.
@@ -298,7 +297,7 @@ class Review(BaseModel):
 
 
 class Validation(BaseModel):
-    review: List[Review]
+    review: list[Review]
     """
     Review information on data set.
     """
@@ -315,7 +314,7 @@ class Compliance(BaseModel):
 
 
 class ComplianceDeclarationsType(BaseModel):
-    compliance: List[Compliance]
+    compliance: list[Compliance]
 
 
 class ModellingAndValidation(BaseModel):
@@ -344,16 +343,16 @@ class ModellingAndValidation(BaseModel):
 
 
 class CommissionerAndGoal(BaseModel):
-    referenceToCommissioner: List[ContactDataSet] | None = None
+    referenceToCommissioner: list[ContactDataSet] | None = None
     project: LocalizedTextList | None = None
 
 
 class DataGenerator(BaseModel):
-    referenceToPersonOrEntityGeneratingTheDataSet: List[ContactDataSet] | None = None
+    referenceToPersonOrEntityGeneratingTheDataSet: list[ContactDataSet] | None = None
 
 
 class DataEntryBy(BaseModel):
-    referenceToDataSetFormat: List[SourceDataSet]
+    referenceToDataSetFormat: list[SourceDataSet]
     referenceToPersonOrEntityEnteringTheData: ContactDataSet | None = None
     timeStamp: int | None = None
 
@@ -439,7 +438,7 @@ class Exchange(BaseModel):
     other: Other | None = None
     resolvedFlowVersion: str | None = None
     resultingflowAmount: float
-    flowProperties: List[FlowProperty]
+    flowProperties: list[FlowProperty]
     typeOfFlow: str
     locationOfSupply: str | None = None
     classification: ClassificationInfo | None = None
@@ -447,7 +446,7 @@ class Exchange(BaseModel):
 
 
 class Exchanges(BaseModel):
-    exchange: List[Exchange]
+    exchange: list[Exchange]
     """
     Input/Output list of exchanges with the quantitative inventory data as well as pre-calculated LCIA results.
     """
@@ -474,7 +473,7 @@ class LCIAResultType(BaseModel):
 
 
 class LCIAResultsType(BaseModel):
-    LCIAResult: List[LCIAResultType]
+    LCIAResult: list[LCIAResultType]
     """
     LCIA result
     """

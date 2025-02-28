@@ -51,7 +51,7 @@ from amlta.formatting.data import create_process_section
 from amlta.formatting.markdown import format_as_markdown
 from amlta.probas.flows import extract_process_flows
 from amlta.probas.processes import ProcessData
-from amlta.question_generation.process import load_batches
+from amlta.question_generation.processing import load_batches
 from amlta.tapas.model import (
     CustomTapasTokenizer,
 )
@@ -125,26 +125,6 @@ async def rewrite_process_query(
     writer(AgentEvent(event=RewritingProcessQueryEvent()))
 
     llm = get_ollama().with_structured_output(RewrittenProcessQuery)
-
-    # retriever = collections.glossary.as_retriever(
-    #     search_type="mmr", search_kwargs={"k": 5}
-    # )
-
-    # def retrieve(input: dict):
-    #     return retriever.get_relevant_documents(input["human_input"])
-
-    # def human_template(input: dict):
-    #     return {
-    #         **input,
-    #         # "human_input": "<glossary>\n{context}\n</glossary>\n<question>{question}</question>".format(
-    #         #     context="\n\n".join(doc.page_content for doc in input["context"]),
-    #         #     question=input["human_input"],
-    #         # ),
-    #         # "human_input": "<glossary>\n{context}\n</glossary>\n<question>{question}</question>".format(
-    #         #     context="\n\n".join(doc.page_content for doc in input["context"]),
-    #         #     question=input["human_input"],
-    #         # ),
-    #     }
 
     chain = base_prompt | inspect_prompt | llm
 
@@ -340,56 +320,6 @@ def _format_flow(index: int, flow: dict) -> str:
     )
 
 
-# async def fetch_flows_chunk(
-#     flows_df: pd.DataFrame,
-#     threshold: float,
-#     query: str,
-#     writer: StreamWriter = noop_writer,
-# ) -> FilteredFlows:
-#     model = load_tapas_model()
-#     tokenizer = load_tapas_tokenizer()
-
-#     flow_indices, aggregation = await asyncio.to_thread(
-#         retrieve_rows_from_chunk,
-#         flows_df,
-#         query=query,
-#         model=model,
-#         tokenizer=tokenizer,
-#         threshold=threshold,
-#     )
-
-#     flows = flows_df.loc[flows_df["original_index"].isin(flow_indices)]
-#     if flows.empty:
-#         return FilteredFlows(flow_indices=[], aggregation=aggregation)
-
-#     llm = get_ollama().with_structured_output(FlowValidation)
-#     chain = base_prompt | llm
-#     human_template = "<question>{question}</question>\n<flows>\n{flows}\n</flows>"
-#     formatted_flows = "\n\n".join(
-#         _format_flow(idx, f) for idx, f in enumerate(flows.to_dict(orient="records"))
-#     )
-
-#     res = cast(
-#         FlowValidation,
-#         await chain.ainvoke(
-#             {
-#                 "system_prompt": filter_flows_system_prompt,
-#                 "human_input": human_template.format(
-#                     question=query, flows=formatted_flows
-#                 ),
-#             }
-#         ),
-#     )
-#     removals_indices = [rem.index for rem in res.removals]
-#     flows = flows.drop(
-#         flows.iloc[removals_indices].index.tolist(), axis=0, inplace=False
-#     )
-
-#     return FilteredFlows(
-#         flow_indices=flows["original_index"].tolist(), aggregation=aggregation
-#     )
-
-
 @task
 async def fetch_flows(
     flows_df: pd.DataFrame,
@@ -437,7 +367,6 @@ async def fetch_flows(
     ]
     filter_results = cast(list[FilteredFlows], await asyncio.gather(*filter_tasks))
 
-    # Merge filtered chunk results.
     final_indices = []
     for res in filter_results:
         final_indices.extend(res.flow_indices)
@@ -904,14 +833,6 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
 
     flows_df = extract_process_flows(selected_process)
 
-    # all_indices = None
-    # aggregations = Counter()
-    # set_operator = (
-    #     set.intersection
-    #     if rewritten_flows_queries.join_type == "intersection"
-    #     else set.union
-    # )
-
     writer(AgentEvent(event=FetchingFlowsEvent()))
     final_flows: FinalFlowsList = FinalFlowsList(
         join_type=rewritten_flows_queries.join_type, flows=[]
@@ -933,7 +854,6 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
         rewritten_flows_queries.queries, await asyncio.gather(*futures)
     ):
         filtered_flows = cast(FilteredFlows, filtered_flows)
-        # aggregations[filtered_flows.aggregation] += 1
 
         final_flows.flows.append(
             FinalFlows(
@@ -944,17 +864,7 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
             )
         )
 
-        # if all_indices is None:
-        #     all_indices = set(filtered_flows.flow_indices)
-        # else:
-        #     all_indices = set_operator(all_indices, set(filtered_flows.flow_indices))
-
-    # assert all_indices is not None
-    # flow_indices = sorted(all_indices)
-    # aggregation = aggregations.most_common(1)[0][0]
-
     writer(AgentEvent(event=FetchedFlowsEvent(flows=final_flows)))
-
     writer(AgentEvent(event=AnalyzingFlowsEvent()))
 
     analysis_result = cast(

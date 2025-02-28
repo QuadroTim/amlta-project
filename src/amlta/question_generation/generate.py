@@ -176,13 +176,12 @@ def generate_question(
     client = get_openai_client()
 
     process_description_data = create_process_section(process, include_flows=False)
-    result_flows, query_params = generate_random_query_params(process)
+    _, query_params = generate_random_query_params(process)
 
     process_description = format_as_yaml(process_description_data)
     process_user_prompt = user_prompt.format(
         process_description=process_description,
         query_params=format_as_yaml(query_params, line_between_sections=False),
-        # flows_result=format_as_yaml(create_flows_section(result_flows)),
     )
 
     print(process_user_prompt)
@@ -320,9 +319,7 @@ def send_batch(batch_file: PathLike) -> Batch:
     return batch
 
 
-def retrieve_batch_results(
-    batch_id: str, eval_dir: PathLike | None = None
-) -> Path | None:
+def retrieve_batch_results(batch_id: str) -> Path | None:
     client = get_openai_client()
 
     qa_gen_dir = get_generated_questions_path()

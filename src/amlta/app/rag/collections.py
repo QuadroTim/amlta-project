@@ -62,13 +62,6 @@ def get_or_create_collection(client: QdrantBase, name: str):
                     size=768,
                     distance=models.Distance.COSINE,
                 ),
-                # "colbertv2.0": models.VectorParams(
-                #     size=len(late_interaction_embeddings[0][0]),
-                #     distance=models.Distance.COSINE,
-                #     multivector_config=models.MultiVectorConfig(
-                #         comparator=models.MultiVectorComparator.MAX_SIM,
-                #     ),
-                # ),
             },
             sparse_vectors_config={
                 "bm25": models.SparseVectorParams(modifier=models.Modifier.IDF)
@@ -165,7 +158,6 @@ def iter_collection(store: QdrantVectorStore):
 
 
 def main():
-    # collections = get_collections(get_qdrant_client("data/qdrant-nomic"))
     collections = get_collections(get_qdrant_client("data/qdrant-yaml"))
     process_store = collections.processes
 

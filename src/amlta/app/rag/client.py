@@ -6,7 +6,9 @@ from amlta.config import config
 
 class QdrantLocalClient(QdrantLocal):
     def __init__(self, location: str | None = None, **kwargs):
-        super().__init__(location=location or str(config.data_dir / "qdrant"), **kwargs)
+        super().__init__(
+            location=location or str(config.data_dir / "qdrant-yaml"), **kwargs
+        )
 
 
 @st.cache_resource

@@ -7,9 +7,9 @@ import pandas as pd
 import torch
 from transformers import TapasForQuestionAnswering
 
-from amlta.data_processing.tapas_flows import transform_flows_for_tapas
 from amlta.tapas.base import id2aggregation
 from amlta.tapas.model import CustomTapasTokenizer
+from amlta.tapas.preprocessing import transform_flows_for_tapas
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 

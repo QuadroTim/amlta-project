@@ -1,19 +1,19 @@
 import functools
 import json
+from collections.abc import Sequence
 from os import PathLike
 from pathlib import Path
 from typing import (
     NamedTuple,
-    Sequence,
     TypedDict,
 )
 
 import pandas as pd
 
-from amlta.data_processing.tapas_flows import transform_flows_for_tapas
 from amlta.probas import flows, processes
 from amlta.question_generation.generate import LCIQuestion, get_generated_questions_path
 from amlta.question_generation.query_params import FlowQueryParams, get_flows_for_query
+from amlta.tapas.preprocessing import transform_flows_for_tapas
 
 
 @functools.lru_cache(maxsize=512)
@@ -166,7 +166,7 @@ def process_and_save_batch_question_results(
 
 # TAPAS has a max token limit of 512, so we need to split the training data into batches
 def build_training_batched_dfs(
-    question: QuestionData, batch_size: int = 15, shuffle_rows=False
+    question: QuestionData, batch_size: int = 15, shuffle_rows=True
 ) -> pd.DataFrame:
     dfs = []
 

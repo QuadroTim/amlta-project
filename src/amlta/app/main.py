@@ -13,7 +13,6 @@ st.set_page_config(page_title="PROBAS Copilot", layout="wide")
 st.title("PROBAS Copilot")
 
 from langchain.callbacks.tracers.logging import LoggingCallbackHandler
-from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
 from streamlit.elements.lib.mutable_status_container import StatusContainer
 
 from amlta.app import config
@@ -153,13 +152,7 @@ async def main(args: argparse.Namespace = UNSET_ARGS):
     from amlta.app.agent.graph import main as graph
 
     with chat_history:
-        # for msg in st.session_state.messages:
-        #     with st.chat_message(msg.type):
-        #         st.markdown(msg.content)
-
         if user_input := chat_input_container.chat_input("Type your message"):
-            # human_message = HumanMessage(content=user_input)
-            # st.session_state.messages.append(human_message)
             _process_selection_container = None
             _flows_selection_container = None
             _flows_analysis_container = None
@@ -195,17 +188,11 @@ async def main(args: argparse.Namespace = UNSET_ARGS):
                 st.markdown(user_input)
 
             with chat_history.chat_message("assistant"):
-                st_handler = StreamlitCallbackHandler(
-                    st.empty(), expand_new_thoughts=False
-                )
-
                 async for lg_event_type, event in graph.astream(
                     user_input,
                     config={
                         "callbacks": [
                             LoggingCallbackHandler(logging.getLogger("main")),
-                            # get_streamlit_cb(st_handler),
-                            # ToolCallbackHandler(side.container()),
                         ],
                         "configurable": {"thread_id": uuid4().hex},
                     },
