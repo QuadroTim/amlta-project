@@ -883,7 +883,7 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
     rewritten_process_query = rewritten_process_query_resp.query
 
     candidate_processes_docs = load_collections().processes.similarity_search(
-        rewritten_process_query, k=5
+        rewritten_process_query, k=10
     )
     candidate_processes = [
         ProcessData.from_uuid(doc.metadata["uuid"]) for doc in candidate_processes_docs
