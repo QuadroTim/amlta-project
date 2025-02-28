@@ -2,13 +2,15 @@ from typing import Any, ClassVar, Literal, TypedDict
 
 from pydantic import BaseModel, Field, field_validator
 
-from amlta.app.rag.client import get_qdrant_client
-from amlta.app.rag.collections import get_collections
 from amlta.config import config
 from amlta.probas.processes import ProcessData
 
-qdrant_client = get_qdrant_client(str(config.data_dir / "qdrant-yaml"))
-collections = get_collections(qdrant_client)
+
+def load_collections():
+    from amlta.app.rag import collections
+
+    client = collections.get_qdrant_client(str(config.data_dir / "qdrant-yaml"))
+    return collections.get_collections(client)
 
 
 class RewrittenProcessQuery(BaseModel):

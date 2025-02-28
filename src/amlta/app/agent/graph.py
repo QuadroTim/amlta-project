@@ -44,7 +44,7 @@ from amlta.app.agent.core import (
     SelectedProcess,
     SelectedProcessEvent,
     SelectingProcessEvent,
-    collections,
+    load_collections,
 )
 from amlta.app.llm import get_ollama
 from amlta.formatting.data import create_process_section
@@ -789,7 +789,7 @@ async def get_final_answer(
     llm = get_ollama()
     chain = base_prompt | llm
 
-    retriever = collections.glossary.as_retriever(
+    retriever = load_collections().glossary.as_retriever(
         search_type="mmr", search_kwargs={"k": 5, "fetch_k": 15}
     )
 
@@ -882,7 +882,7 @@ async def main(user_question: str, writer: StreamWriter) -> AgentOutput:
     rewritten_process_query_resp = await rewritten_process_query_fut
     rewritten_process_query = rewritten_process_query_resp.query
 
-    candidate_processes_docs = collections.processes.similarity_search(
+    candidate_processes_docs = load_collections().processes.similarity_search(
         rewritten_process_query, k=5
     )
     candidate_processes = [
