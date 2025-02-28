@@ -181,7 +181,7 @@ life cycle inventory database.
     a) the user asks for one or more specific flows. Multiple flows ARE ALLOWED and MUST NOT be
        splitted
     b) the user asks for one specific class of flows
-    c) the user asks for one specific type of flow (elementary flow or wast flow)
+    c) the user asks for one specific type of flow (elementary flow or waste flow)
 2. If and only if the question contains multiple categories, decompose the question into multiple
     queries, one for each category.
 3. Given the (decomposed) question, formulate a neutral natural question query -- that is, a query that
