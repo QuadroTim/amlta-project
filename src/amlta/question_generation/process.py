@@ -51,7 +51,7 @@ class QuestionData(TypedDict):
 
 def list_batch_outputs() -> list[Path]:
     out_dir = get_generated_questions_path() / "out"
-    return [file for file in out_dir.glob("*.jsonl")]
+    return [file for file in out_dir.glob("batch_*.jsonl")]
 
 
 def load_batches() -> list[QuestionData]:
