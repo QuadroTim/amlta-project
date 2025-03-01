@@ -5,13 +5,15 @@ AMLTA Project
 
 Python 3.11
 
+Tested on windows and in Colab.
+
 # Setup
 
 With [uv](https://docs.astral.sh/uv/):
 
 ```console
 $ uv sync
-$ pre-commit install
+$ pre-commit install # optional
 ```
 
 or pip:
@@ -20,60 +22,67 @@ or pip:
 $ python -m venv .venv
 $ . ./.venv/Scripts/activate
 $ python -m pip install -e .
-$ pre-commit install
+$ pre-commit install # optional
 ```
 
-# App
+# Structure
 
-1. Open the [`colab_proxy.ipynb` in Colab](https://colab.research.google.com/github/woranov/amlta-project/blob/main/notebooks/colab_proxy.ipynb)
-2. Run Ollama and pull the model
-3. Run ngrok and copy the URL
-4. Run the app. Example:
-    ```console
-    $ amlta-app -- --model "qwen2.5:32b-instruct-q3_K_M" --base-url "http://random-domain.ngrok-free.app"
-    ```
+## Notebooks
+
+Scripts and notebooks are found in the `notebooks` folder.
+- [`probas_eda.ipynb`](notebooks/probas_eda.ipynb): EDA of the probas data.
+- [`openai_batch_generate_questions.ipynb`](notebooks/openai_batch_generate_questions.ipynb)
+    Was used to send batches to the OpenAI API.
+- [`processes_transform_yaml.ipynb`](notebooks/processes_transform_yaml.ipynb): Used to transform
+    the processes data to yaml files.
+- [`tapas_cache_train_data.ipynb`](notebooks/tapas_cache_train_data.ipynb): Used to prepare and
+    store training data for TAPAS.
+- [`tapas_fine_tuning.ipynb`](notebooks/tapas_fine_tuning.ipynb): TAPAS fine-tuning.
+- [`tapas_eval_qwen_query_generation.ipynb`](notebooks/tapas_eval_qwen_query_generation.ipynb):
+    Used to rephrase validation qusetions.
+- [`tapas_eval.ipynb`](notebooks/tapas_eval.ipynb): TAPAS evaluation.
+- [`colab_proxy.ipynb`](notebooks/colab_proxy.ipynb): Colab + ngrok proxy for Ollama.
 
 
-# Packages
+Remaining notebooks can be ignored.
 
-## [`probas`](src/amlta/probas/README.md)
 
-### Download
+## Source code (`src/amlta`)
 
-Download the data from Google Drive. Or download manually from the API using the `probas-dl` command.
+### `probas`
 
-#### Manual
+Contains code to download, process and load the probas data.
 
-- Download index
+### `formatting`
 
-  ```console
-  $ probas-dl download-index --format json
-  ```
-  and/or
-  ```console
-  $ probas-dl download-index --format xml
-  ```
+Contains code to format structured data to markdown or yaml. Used for RAG.
 
-- Download ILCD data
 
-  ```console
-  $ probas-dl download-lcis
-  ```
+### `question_generation`
 
-  - Or LCI results only
+Contains code to generate synthetic queries and questions.
 
-    ```console
-    $ probas-dl download-lcis --uuids-file lci-results-uuids.txt
-    ```
+### `tapas`
 
-- Download processes as json
+Contains code for preprocessing for TAPAS as well as inference retrieval.
 
-  ```console
-  $ probas-dl download-processes-json
-  ```
+The used model can be found on [Hugging Face - tapas-finetuned-probas-supervised-2](https://huggingface.co/woranov/tapas-finetuned-probas-supervised-2).
 
-- Download LCIA methods
 
-  ```console
-  $ probas-dl download-lcia-methods
-  ```
+### `app`
+
+Contains code for the streamlit app. To use it with Ollama, the base url and the llm model name
+should be passed as arguments.
+
+```console
+$ amlta-app -- --model "qwen2.5:32b-instruct-q3_K_M" --base-url "http://random-domain.ngrok-free.app"
+```
+
+It is designed to be ran with `qwen2.5:32b-instruct-q3_K_M`. For that, ollama can be proxied with
+Colab + ngrok using the [`colab_proxy.ipynb` notebook](https://colab.research.google.com/github/woranov/amlta-project/blob/main/notebooks/colab_proxy.ipynb).
+
+
+# Data
+
+`data` contains only essential files that have small size. The remaining data can be found in the
+linked Google Drive.
