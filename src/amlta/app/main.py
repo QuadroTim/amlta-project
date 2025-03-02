@@ -9,8 +9,8 @@ import streamlit as st
 from amlta.formatting.data import create_process_section
 from amlta.formatting.markdown import format_as_markdown
 
-st.set_page_config(page_title="PROBAS Copilot", layout="wide")
-st.title("PROBAS Copilot")
+st.set_page_config(page_title="ProBas Assistant", layout="wide")
+st.title("ProBas Assistant")
 
 from langchain.callbacks.tracers.logging import LoggingCallbackHandler
 from streamlit.elements.lib.mutable_status_container import StatusContainer
