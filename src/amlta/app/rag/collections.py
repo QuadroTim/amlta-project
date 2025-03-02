@@ -40,9 +40,9 @@ def get_or_create_collection(client: QdrantBase, name: str):
                     size=1024, distance=models.Distance.COSINE
                 ),
             },
-            sparse_vectors_config={
-                "bm25": models.SparseVectorParams(modifier=models.Modifier.IDF)
-            },
+            # sparse_vectors_config={
+            #     "bm25": models.SparseVectorParams(modifier=models.Modifier.IDF)
+            # },
         )
 
     return client.get_collection(name)
@@ -93,8 +93,8 @@ def get_collections(client: QdrantBase):
     get_or_create_collection(client, "glossary")
     get_or_create_collection(client, "processes")
 
-    cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-    # cross_encoder = CrossEncoder("cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
+    # cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+    cross_encoder = CrossEncoder("cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
 
     embedding = PrefixedHuggingFaceEmbeddings(
         model_name="intfloat/multilingual-e5-large"
