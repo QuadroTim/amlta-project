@@ -29,6 +29,15 @@ class BaseModel(_BaseModel):
 # --------------------------
 
 
+# language_stats = {
+#     "processes": Counter(),
+#     "flows": Counter(),
+# }
+
+
+# type_ctx = ContextVar("type_ctx")
+
+
 class LocalizedText(BaseModel):
     value: str | None = None
     lang: str | None = None
@@ -46,9 +55,16 @@ class LocalizedTextList(UserList[LocalizedText]):
     def get(self, preferred_lang: str = "en") -> str | None:
         for text in self:
             if text.lang == preferred_lang and text.value:
-                return text.value
+                chosen = text
+                break
+        else:
+            chosen = next((text for text in self if text.value), None)
 
-        return next((text.value for text in self if text.value), None)
+        if chosen is not None:
+            # lang = chosen.lang or "en"
+            # language_stats[type_ctx.get()][lang] += 1
+
+            return chosen.value
 
 
 class AccessRestriction(BaseModel):
