@@ -47,6 +47,22 @@ Scripts and notebooks are found in the `notebooks` folder.
 Remaining notebooks can be ignored.
 
 
+## Data
+
+The `data` folder of the repo contains only essential files that have small size. The remaining data can be found in the
+linked Google Drive and be merged.
+
+The folder structure shortly described:
+- all top level files + folders `schemas` and `ILCD` are ProBas data.
+  - main data that was used is in `ILCD/processes_json`.
+- `generated` contains data related to the synthesized question generation
+  - `tapas-eval-questions.jsonl` contains 100 rephrased then rewritten questions of the validation set
+  - the full set of generated questions are in `generated/questions/out`
+  - corresponding files including the syntactically generated query parameters are in files `generated/questions/batch_inputs/*_input.jsonl`
+- `jina-ft` contains intermediate outputs used for fine-tuning the jina model
+- `tapas-ft` contains checkpoints as well as training data used for fine tuning tapas
+
+
 ## Source code (`src/amlta`)
 
 ### `probas`
@@ -80,19 +96,3 @@ $ amlta-app -- --model "qwen2.5:32b-instruct-q3_K_M" --base-url "http://random-d
 
 It is designed to be ran with `qwen2.5:32b-instruct-q3_K_M`. For that, ollama can be proxied with
 Colab + ngrok using the [`colab_proxy.ipynb` notebook](https://colab.research.google.com/github/woranov/amlta-project/blob/main/notebooks/colab_proxy.ipynb).
-
-
-# Data
-
-`data` contains only essential files that have small size. The remaining data can be found in the
-linked Google Drive.
-
-The folder structure shortly described:
-- all top level files + folders `schemas` and `ILCD` are ProBas data.
-  - main data that was used is in `ILCD/processes_json`.
-- `generated` contains data related to the synthesized question generation
-  - `tapas-eval-questions.jsonl` contains 100 rephrased then rewritten questions of the validation set
-  - the full set of generated questions are in `generated/questions/out`
-  - corresponding files including the syntactically generated query parameters are in files `generated/questions/batch_inputs/*_input.jsonl`
-- `jina-ft` contains intermediate outputs used for fine-tuning the jina model
-- `tapas-ft` contains checkpoints as well as training data used for fine tuning tapas
