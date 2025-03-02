@@ -5,7 +5,7 @@ AMLTA Project
 
 Python 3.11
 
-Tested on windows and in Colab.
+Tested on Windows and in Colab.
 
 # Setup
 
@@ -39,7 +39,7 @@ Scripts and notebooks are found in the `notebooks` folder.
     store training data for TAPAS.
 - [`tapas_fine_tuning.ipynb`](notebooks/tapas_fine_tuning.ipynb): TAPAS fine-tuning.
 - [`tapas_eval_qwen_query_generation.ipynb`](notebooks/tapas_eval_qwen_query_generation.ipynb):
-    Used to rephrase validation qusetions.
+    Used to rephrase validation questions.
 - [`tapas_eval.ipynb`](notebooks/tapas_eval.ipynb): TAPAS evaluation.
 - [`colab_proxy.ipynb`](notebooks/colab_proxy.ipynb): Colab + ngrok proxy for Ollama.
 
