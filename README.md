@@ -53,8 +53,9 @@ The `data` folder of the repo contains only essential files that have small size
 linked Google Drive and be merged.
 
 The folder structure shortly described:
-- all top level files + folders `schemas` and `ILCD` are ProBas data.
-  - main data that was used is in `ILCD/processes_json`.
+- all top level files + folders `schemas` and `ILCD` are ProBas data
+  - main data that was used is in `ILCD/processes_json`
+- `qdrant-yaml` is the folder for the qdrant vector store
 - `generated` contains data related to the synthesized question generation
   - `tapas-eval-questions.jsonl` contains 100 rephrased then rewritten questions of the validation set
   - the full set of generated questions are in `generated/questions/out`
