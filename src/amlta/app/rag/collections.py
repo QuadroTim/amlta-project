@@ -6,6 +6,7 @@ from langchain_qdrant.fastembed_sparse import FastEmbedSparse
 from langchain_qdrant.qdrant import QdrantVectorStore
 from qdrant_client.client_base import QdrantBase
 from qdrant_client.models import models
+from sentence_transformers import CrossEncoder
 from tqdm.auto import tqdm
 
 from amlta.app.rag.client import get_qdrant_client
@@ -15,41 +16,18 @@ from amlta.app.rag.loaders import (
     YamlProcessLoader,
 )
 
-# class NomicHfEmbeddings(HuggingFaceEmbeddings):
-#     def __init__(
-#             self,
-#             model_name: str = "nomic-ai/nomic-embed-text-v2-moe",
-#             trust_remote_code: bool = True,
-#             **kwargs
-#         ):
-#         model_kwargs = kwargs.pop("model_kwargs", {})
-#         model_kwargs["trust_remote_code"] = trust_remote_code
 
-#         super().__init__(model_name=model_name, model_kwargs=model_kwargs, **kwargs)
+class PrefixedHuggingFaceEmbeddings(HuggingFaceEmbeddings):
+    passage_prefix: str = "passage"
+    query_prefix: str = "query"
 
-#     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-#         prev_encode_kwargs = self.encode_kwargs.copy()
-#         self.encode_kwargs = prev_encode_kwargs | {
-#             "prompt_name": "passage",
-#         }
-#         ret = super().embed_documents(texts)
-#         self.encode_kwargs = prev_encode_kwargs
-#         return ret
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return super().embed_documents(
+            [f"{self.passage_prefix}: {text}" for text in texts]
+        )
 
-#     def embed_query(self, text: str) -> list[float]:
-#         prev_encode_kwargs = self.encode_kwargs.copy()
-#         self.encode_kwargs = prev_encode_kwargs | {
-#             "prompt_name": "query",
-#         }
-#         ret = super().embed_query(text)
-#         self.encode_kwargs = prev_encode_kwargs
-#         return ret
-
-# embedding = NomicHfEmbeddings()
-
-embedding = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
-)
+    def embed_query(self, text: str) -> list[float]:
+        return super().embed_query(f"{self.query_prefix}: {text}")
 
 
 def get_or_create_collection(client: QdrantBase, name: str):
@@ -57,10 +35,9 @@ def get_or_create_collection(client: QdrantBase, name: str):
         client.create_collection(
             name,
             vectors_config={
-                # paraphrase-multilingual-mpnet-base-v2
+                # intfloat/multilingual-e5-large
                 "dense": models.VectorParams(
-                    size=768,
-                    distance=models.Distance.COSINE,
+                    size=1024, distance=models.Distance.COSINE
                 ),
             },
             sparse_vectors_config={
@@ -74,6 +51,8 @@ def get_or_create_collection(client: QdrantBase, name: str):
 class Collections(NamedTuple):
     glossary: QdrantVectorStore
     processes: QdrantVectorStore
+
+    reranker: CrossEncoder
 
 
 def load_documents(
@@ -114,6 +93,13 @@ def get_collections(client: QdrantBase):
     get_or_create_collection(client, "glossary")
     get_or_create_collection(client, "processes")
 
+    cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+    # cross_encoder = CrossEncoder("cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
+
+    embedding = PrefixedHuggingFaceEmbeddings(
+        model_name="intfloat/multilingual-e5-large"
+    )
+
     collections = Collections(
         glossary=QdrantVectorStore(
             client,  # type: ignore
@@ -133,6 +119,7 @@ def get_collections(client: QdrantBase):
             sparse_embedding=FastEmbedSparse(),
             retrieval_mode=RetrievalMode.HYBRID,
         ),
+        reranker=cross_encoder,
     )
 
     # glossary_loader = MarkdownGlossaryLoader()
@@ -158,7 +145,7 @@ def iter_collection(store: QdrantVectorStore):
 
 
 def main():
-    collections = get_collections(get_qdrant_client("data/qdrant-yaml"))
+    collections = get_collections(get_qdrant_client())
     process_store = collections.processes
 
     while query := input("Enter a query: "):
