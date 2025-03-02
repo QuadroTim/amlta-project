@@ -41,7 +41,14 @@ Scripts and notebooks are found in the `notebooks` folder.
 - [`tapas_eval_qwen_query_generation.ipynb`](notebooks/tapas_eval_qwen_query_generation.ipynb):
     Used to rephrase validation questions.
 - [`tapas_eval.ipynb`](notebooks/tapas_eval.ipynb): TAPAS evaluation.
-- [`colab_proxy.ipynb`](notebooks/colab_proxy.ipynb): Colab + ngrok proxy for Ollama.
+- [`LaBSE.py`](notebooks/LaBSE.py): This script implements the LaBSE (Language-agnostic BERT Sentence Embedding) model. Creates embeddings. Evaluates model effectiveness with and without reranking.
+- [`Models Evaluation.py`](notebooks/Models%20Evaluation.py): This script evaluates the performance of various embedding models using metrics such as Precision@K, Recall@K, F1-Score, NDCG, and MRR.
+- [`Reranked Models Evaluation.py`](notebooks/Reranked%20Models%20Evaluation.py): This script evaluates the effectiveness of models after applying reranking techniques to improve the quality of retrieved results.
+- [`jina-embeddings-v2-base-de Fine-tuned.py`](notebooks/jina-embeddings-v2-base-de%20Fine-tuned.py): This script implements the fine-tuned version of the jina-embeddings-v2-base-de model. Creates embeddings. Evaluates model effectiveness with and without reranking.
+- [`jina-embeddings-v2-base-de.py`](notebooks/jina-embeddings-v2-base-de.py): This script implements the base version of the jina-embeddings-v2-base-de model. Generates embeddings. Evaluates model effectiveness with and without reranking.
+- [`multilingual-e5-large.py`](notebooks/multilingual-e5-large.py): This script implements the multilingual-e5-large model. Generates embeddings. Evaluates model effectiveness with and without reranking.
+- [`paraphrase-multilingual-mpnet-base-v2.py`](notebooks/paraphrase-multilingual-mpnet-base-v2.py): This script implements the paraphrase-multilingual-mpnet-base-v2 model. Generates embeddings. Evaluates model effectiveness with and without reranking.
+- [`Fine tuning of Jina base de.ipynb`](notebooks/Fine%20tuning%20of%20Jina%20base%20de.ipynb): This notebook is fine-tuning process of the jina-embeddings-v2-base-de model. It includes data preparation, training, and evaluation steps. 
 
 
 Remaining notebooks can be ignored.
