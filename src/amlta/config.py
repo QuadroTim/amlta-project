@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from os import PathLike
+from os import PathLike, environ
 from pathlib import Path
 from typing import Self
 
@@ -61,7 +61,11 @@ if IN_COLAB:
     mount_point = Path("/content/drive")
     drive_path = mount_point / "MyDrive"
 
-    # edit
-    data_dir = drive_path / "uni" / "ws2425" / "amlta" / "project" / "data"
+    data_dir = Path(
+        environ.get(
+            "COLAB_DATA_DIR",
+            drive_path / "uni" / "ws2425" / "amlta" / "project" / "data",
+        )
+    )
 
-    config.update(data_dir=data_dir)
+    config.__init__(data_dir=data_dir)
