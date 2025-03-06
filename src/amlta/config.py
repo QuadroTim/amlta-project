@@ -50,7 +50,7 @@ class Config:
 config = Config()
 
 try:
-    import google.colab  # pyright: ignore[reportMissingImports]  # noqa: F401, I001
+    from google.colab import userdata  # pyright: ignore[reportMissingImports]  # noqa: F401, I001
 except ImportError:
     IN_COLAB = False
 else:
@@ -61,11 +61,15 @@ if IN_COLAB:
     mount_point = Path("/content/drive")
     drive_path = mount_point / "MyDrive"
 
-    data_dir = Path(
-        environ.get(
-            "COLAB_DATA_DIR",
-            drive_path / "uni" / "ws2425" / "amlta" / "project" / "data",
-        )
-    )
+    data_dir = environ.get("COLAB_DATA_DIR")
+    if not data_dir:
+        try:
+            data_dir = userdata.get("COLAB_DATA_DIR")
+        except Exception:
+            pass
+    if not data_dir:
+        data_dir = drive_path / "uni" / "ws2425" / "amlta" / "project" / "data"
+
+    data_dir = Path(data_dir)
 
     config.__init__(data_dir=data_dir)

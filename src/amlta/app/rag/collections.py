@@ -30,7 +30,13 @@ class PrefixedHuggingFaceEmbeddings(HuggingFaceEmbeddings):
         return super().embed_query(f"{self.query_prefix}: {text}")
 
 
-def get_or_create_collection(client: QdrantBase, name: str):
+def get_or_create_collection(client: QdrantBase, name: str, with_sparse=False):
+    if with_sparse:
+        sparse_vectors_config = {
+            "bm25": models.SparseVectorParams(modifier=models.Modifier.IDF)
+        }
+    else:
+        sparse_vectors_config = None
     if not client.collection_exists(name):
         client.create_collection(
             name,
@@ -40,9 +46,7 @@ def get_or_create_collection(client: QdrantBase, name: str):
                     size=1024, distance=models.Distance.COSINE
                 ),
             },
-            # sparse_vectors_config={
-            #     "bm25": models.SparseVectorParams(modifier=models.Modifier.IDF)
-            # },
+            sparse_vectors_config=sparse_vectors_config,
         )
 
     return client.get_collection(name)
@@ -90,7 +94,7 @@ def load_documents(
 
 
 def get_collections(client: QdrantBase):
-    get_or_create_collection(client, "glossary")
+    get_or_create_collection(client, "glossary", with_sparse=True)
     get_or_create_collection(client, "processes")
 
     # cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
@@ -115,9 +119,9 @@ def get_collections(client: QdrantBase):
             "processes",
             vector_name="dense",
             embedding=embedding,
-            sparse_vector_name="bm25",
-            sparse_embedding=FastEmbedSparse(),
-            retrieval_mode=RetrievalMode.HYBRID,
+            # sparse_vector_name="bm25",
+            # sparse_embedding=FastEmbedSparse(),
+            # retrieval_mode=RetrievalMode.HYBRID,
         ),
         reranker=cross_encoder,
     )
