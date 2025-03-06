@@ -48,3 +48,20 @@ class Config:
 
 
 config = Config()
+
+try:
+    import google.colab  # pyright: ignore[reportMissingImports]  # noqa: F401, I001
+except ImportError:
+    IN_COLAB = False
+else:
+    IN_COLAB = True
+
+
+if IN_COLAB:
+    mount_point = Path("/content/drive")
+    drive_path = mount_point / "MyDrive"
+
+    # edit
+    data_dir = drive_path / "uni" / "ws2425" / "amlta" / "project" / "data"
+
+    config.update(data_dir=data_dir)
