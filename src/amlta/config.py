@@ -58,7 +58,7 @@ else:
 
 
 if IN_COLAB:
-    # mount_point = Path("/content/drive")
+    # mount_point = Path("/content")
     # drive_path = mount_point / "MyDrive"
     mount_point = Path("/content")
     drive_path = mount_point / "Shareddrives"
