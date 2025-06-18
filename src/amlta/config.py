@@ -58,8 +58,10 @@ else:
 
 
 if IN_COLAB:
+    # mount_point = Path("/content/drive")
+    # drive_path = mount_point / "MyDrive"
     mount_point = Path("/content/drive")
-    drive_path = mount_point / "MyDrive"
+    drive_path = mount_point / "Shareddrives"
 
     data_dir = environ.get("COLAB_DATA_DIR")
     if not data_dir:
@@ -68,7 +70,8 @@ if IN_COLAB:
         except Exception:
             pass
     if not data_dir:
-        data_dir = drive_path / "uni" / "ws2425" / "amlta" / "project" / "data"
+        # data_dir = drive_path / "uni" / "ws2425" / "amlta" / "project" / "data"
+        data_dir = drive_path / "project" / "data"
 
     data_dir = Path(data_dir)
 
